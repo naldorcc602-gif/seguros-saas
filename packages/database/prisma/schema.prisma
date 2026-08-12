@@ -1,0 +1,711 @@
+// ============================================================================
+// Sistema de RegulaÃ§Ã£o de Sinistros â€” Schema Prisma (Fase 2)
+// PostgreSQL | Multi-tenant via tenantId em todas as tabelas relevantes
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// TENANT & CONFIGURAÃ‡Ã•ES
+// ============================================================================
+
+model Tenant {
+  id            String   @id @default(cuid())
+  name          String
+  document      String?  // CNPJ da corretora/seguradora contratante
+  logoUrl       String?
+  primaryColor  String?
+  domain        String?  @unique
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  settings              TenantSettings?
+  users                 User[]
+  insurers              Insurer[]
+  brokers               Broker[]
+  clients               Client[]
+  adjusters             Adjuster[]
+  workshops             Workshop[]
+  dispatchers           Dispatcher[]
+  lawyers               Lawyer[]
+  claims                Claim[]
+  tags                  Tag[]
+  emailTemplates        EmailTemplate[]
+  checklistTemplateItems ChecklistTemplateItem[]
+  notifications         Notification[]
+  auditLogs             AuditLog[]
+}
+
+model TenantSettings {
+  id                    String   @id @default(cuid())
+  tenantId              String   @unique
+  tenant                Tenant   @relation(fields: [tenantId], references: [id])
+  smtpHost              String?
+  smtpPort              Int?
+  smtpUser              String?
+  smtpPasswordEncrypted String?
+  whatsappToken         String?
+  emailSignatureHtml    String?
+  backupEnabled         Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// ============================================================================
+// USUÃRIOS, AUTENTICAÃ‡ÃƒO E RBAC
+// ============================================================================
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  SUPERVISOR
+  ADJUSTER    // Regulador
+  ASSISTANT
+  BROKER
+  CLIENT
+}
+
+model User {
+  id                String    @id @default(cuid())
+  tenantId          String
+  tenant            Tenant    @relation(fields: [tenantId], references: [id])
+  name              String
+  email             String
+  passwordHash      String
+  role              UserRole
+  permissions       UserPermission[]
+  twoFactorSecret   String?
+  twoFactorEnabled  Boolean   @default(false)
+  active            Boolean   @default(true)
+  lastLoginAt       DateTime?
+  // Bloqueio de conta apÃ³s tentativas de login falhas (Fase 16 â€” hardening
+  // de produÃ§Ã£o). failedLoginAttempts zera a cada login bem-sucedido;
+  // lockedUntil Ã© null enquanto a conta nÃ£o estiver bloqueada.
+  failedLoginAttempts Int     @default(0)
+  lockedUntil       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  refreshTokens     RefreshToken[]
+  assignedClaims    Claim[]          @relation("AssignedUser")
+  comments          Comment[]
+  authoredTasks     Task[]           @relation("TaskAssignee")
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  uploadedDocuments Document[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Permission {
+  id              String @id @default(cuid())
+  key             String @unique // ex: "claims:edit", "financial:view"
+  description     String?
+  userPermissions UserPermission[]
+}
+
+model UserPermission {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  granted      Boolean    @default(true)
+
+  @@unique([userId, permissionId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  tokenHash String
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ============================================================================
+// CADASTROS AUXILIARES
+// ============================================================================
+
+model Insurer {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  name         String
+  document     String?
+  contactEmail String?
+  contactPhone String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  claims       Claim[]
+
+  @@index([tenantId])
+}
+
+model Broker {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  name         String
+  document     String?
+  contactEmail String?
+  contactPhone String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  claims       Claim[]
+
+  @@index([tenantId])
+}
+
+model Client {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  name         String
+  documentType String   // CPF | CNPJ
+  document     String
+  phone        String?
+  whatsapp     String?
+  email        String?
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  claims       Claim[]
+
+  @@index([tenantId, document])
+}
+
+model Adjuster {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  document  String?
+  specialty String?
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+
+  claimAssignments ClaimAdjuster[]
+
+  @@index([tenantId])
+}
+
+model Workshop {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  document  String?
+  phone     String?
+  email     String?
+  address   String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+model Dispatcher {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  document  String?
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+model Lawyer {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  oabNumber String?
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+model ThirdParty {
+  id           String  @id @default(cuid())
+  claimId      String
+  claim        Claim   @relation(fields: [claimId], references: [id])
+  name         String
+  document     String?
+  phone        String?
+  vehiclePlate String?
+  description  String?
+
+  @@index([claimId])
+}
+
+// ============================================================================
+// SINISTRO (agregado central)
+// ============================================================================
+
+enum ClaimStage {
+  NEW                  // Novo
+  INITIAL_CONTACT      // Contato Inicial
+  DOCS_PENDING         // DocumentaÃ§Ã£o Pendente
+  DOCS_RECEIVED        // DocumentaÃ§Ã£o Recebida
+  ANALYSIS             // AnÃ¡lise
+  INSPECTION           // Vistoria
+  ADJUSTMENT           // RegulaÃ§Ã£o
+  INSURER              // Seguradora
+  PAYMENT              // Pagamento
+  COMPLETED            // ConcluÃ­do
+  DENIED               // Negado
+}
+
+enum ClaimProductType {
+  AUTO
+  CARGO
+  LIFE
+  RESIDENTIAL
+  BUSINESS
+  TRANSPORT
+  RC
+  RCTRC
+  RCDC
+  RCV
+}
+
+enum ClaimPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Claim {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  internalNumber String   // sequencial por tenant, gerado na aplicaÃ§Ã£o
+  insurerNumber  String?
+
+  insurerId      String?
+  insurer        Insurer? @relation(fields: [insurerId], references: [id])
+  brokerId       String?
+  broker         Broker?  @relation(fields: [brokerId], references: [id])
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id])
+  assignedUserId String?
+  assignedUser   User?    @relation("AssignedUser", fields: [assignedUserId], references: [id])
+
+  policyNumber   String?
+  productType    ClaimProductType
+  coverage       String?
+  deductible     Decimal? @db.Decimal(14, 2)
+  insuredItem    String?
+  vehiclePlate   String?
+  renavam        String?
+  chassis        String?
+  vehicleModel   String?
+  vehicleYear    Int?
+
+  occurredAt       DateTime?
+  occurredLocation String?
+  description      String?
+  claimType        String?
+  cause            String?
+  hasThirdParties  Boolean  @default(false)
+  estimatedValue   Decimal? @db.Decimal(14, 2)
+  notes            String?
+
+  stage    ClaimStage    @default(NEW)
+  priority ClaimPriority @default(MEDIUM)
+
+  slaDueAt     DateTime?
+  closedAt     DateTime?
+  deniedReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents         Document[]
+  comments          Comment[]
+  timelineEvents    TimelineEvent[]
+  checklistItems    ClaimChecklistItem[]
+  communications    Communication[]
+  tasks             Task[]
+  calendarEvents    CalendarEvent[]
+  uploadLinks       UploadLink[]
+  thirdParties      ThirdParty[]
+  adjusters         ClaimAdjuster[]
+  financialEntries  FinancialEntry[]
+  tags              ClaimTag[]
+
+  @@unique([tenantId, internalNumber])
+  @@index([tenantId, stage])
+  @@index([tenantId, clientId])
+  @@index([tenantId, insurerId])
+}
+
+model ClaimAdjuster {
+  id         String   @id @default(cuid())
+  claimId    String
+  claim      Claim    @relation(fields: [claimId], references: [id])
+  adjusterId String
+  adjuster   Adjuster @relation(fields: [adjusterId], references: [id])
+  role       String?  // ex: "vistoriador principal"
+
+  @@unique([claimId, adjusterId])
+}
+
+model Tag {
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  name     String
+  color    String?
+
+  claims ClaimTag[]
+
+  @@unique([tenantId, name])
+}
+
+model ClaimTag {
+  claimId String
+  claim   Claim  @relation(fields: [claimId], references: [id])
+  tagId   String
+  tag     Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([claimId, tagId])
+}
+
+// ============================================================================
+// DOCUMENTOS E CHECKLIST
+// ============================================================================
+
+enum DocumentStatus {
+  PENDING
+  RECEIVED
+  APPROVED
+  REJECTED
+  RESUBMISSION_REQUESTED
+}
+
+model Document {
+  id                String              @id @default(cuid())
+  tenantId          String
+  claimId           String
+  claim             Claim               @relation(fields: [claimId], references: [id])
+  checklistItemId   String?
+  checklistItem     ClaimChecklistItem? @relation(fields: [checklistItemId], references: [id])
+
+  fileName          String
+  mimeType          String
+  sizeBytes         Int
+  storageKey        String              // chave no S3/R2
+  status            DocumentStatus      @default(PENDING)
+  uploadedByUserId  String?
+  uploadedByUser    User?               @relation(fields: [uploadedByUserId], references: [id])
+  uploadedByClient  Boolean             @default(false)
+  ipAddress         String?
+  geoLocation       String?
+  ocrExtractedData  Json?
+  createdAt         DateTime            @default(now())
+
+  versions DocumentVersion[]
+  comments Comment[]
+
+  @@index([tenantId, claimId])
+}
+
+model DocumentVersion {
+  id               String   @id @default(cuid())
+  documentId       String
+  document         Document @relation(fields: [documentId], references: [id])
+  storageKey       String
+  versionNumber    Int
+  uploadedByUserId String?
+  createdAt        DateTime @default(now())
+
+  @@index([documentId])
+}
+
+model ChecklistTemplateItem {
+  id          String           @id @default(cuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  productType ClaimProductType
+  name        String
+  required    Boolean          @default(true)
+  order       Int              @default(0)
+
+  @@index([tenantId, productType])
+}
+
+model ClaimChecklistItem {
+  id        String         @id @default(cuid())
+  claimId   String
+  claim     Claim          @relation(fields: [claimId], references: [id])
+  name      String
+  required  Boolean        @default(true)
+  status    DocumentStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  documents Document[]
+  comments  Comment[]
+
+  @@index([claimId])
+}
+
+// Portal pÃºblico de upload (sem login)
+model UploadLink {
+  id        String    @id @default(cuid())
+  claimId   String
+  claim     Claim     @relation(fields: [claimId], references: [id])
+  token     String    @unique
+  expiresAt DateTime?
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  @@index([claimId])
+}
+
+// ============================================================================
+// TIMELINE, COMUNICAÃ‡ÃƒO E COMENTÃRIOS
+// ============================================================================
+
+// Append-only â€” nunca update/delete pela aplicaÃ§Ã£o
+model TimelineEvent {
+  id            String   @id @default(cuid())
+  tenantId      String
+  claimId       String
+  claim         Claim    @relation(fields: [claimId], references: [id])
+  type          String   // "STAGE_CHANGED", "DOCUMENT_UPLOADED", "EMAIL_SENT", ...
+  description   String
+  metadata      Json?
+  actorUserId   String?
+  actorIsClient Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, claimId])
+}
+
+enum CommunicationChannel {
+  EMAIL
+  WHATSAPP
+  PHONE_CALL
+  INTERNAL_NOTE
+}
+
+model Communication {
+  id         String               @id @default(cuid())
+  tenantId   String
+  claimId    String
+  claim      Claim                @relation(fields: [claimId], references: [id])
+  channel    CommunicationChannel
+  direction  String               // INBOUND | OUTBOUND
+  subject    String?
+  content    String
+  fromUserId String?
+  createdAt  DateTime             @default(now())
+
+  @@index([tenantId, claimId])
+}
+
+model Comment {
+  id              String              @id @default(cuid())
+  tenantId        String
+  claimId         String?
+  claim           Claim?              @relation(fields: [claimId], references: [id])
+  documentId      String?
+  document        Document?           @relation(fields: [documentId], references: [id])
+  checklistItemId String?
+  checklistItem   ClaimChecklistItem? @relation(fields: [checklistItemId], references: [id])
+  authorUserId    String?
+  author          User?               @relation(fields: [authorUserId], references: [id])
+  content         String
+  createdAt       DateTime            @default(now())
+
+  @@index([tenantId, claimId])
+}
+
+// ============================================================================
+// NOTIFICAÃ‡Ã•ES E E-MAIL
+// ============================================================================
+
+enum NotificationType {
+  NEW_CLAIM
+  DOCUMENT_UPLOADED
+  DOCUMENT_REJECTED
+  DOCUMENT_APPROVED
+  DOCUMENT_PENDING
+  STAGE_CHANGED
+  PAYMENT
+  DENIAL
+  CLOSURE
+  DEADLINE_DUE
+  SLA_DUE
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  tenantId  String
+  tenant    Tenant           @relation(fields: [tenantId], references: [id])
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  type      NotificationType
+  title     String
+  body      String
+  claimId   String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([tenantId, userId, read])
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  key       String   // "document_request" | "confirmation" | "pending" | ...
+  subject   String
+  bodyHtml  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, key])
+}
+
+// ============================================================================
+// TAREFAS E AGENDA
+// ============================================================================
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
+model Task {
+  id             String       @id @default(cuid())
+  tenantId       String
+  claimId        String?
+  claim          Claim?       @relation(fields: [claimId], references: [id])
+  title          String
+  description    String?
+  dueDate        DateTime?
+  priority       TaskPriority @default(MEDIUM)
+  status         TaskStatus   @default(OPEN)
+  assignedUserId String?
+  assignedUser   User?        @relation("TaskAssignee", fields: [assignedUserId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([tenantId, claimId])
+}
+
+enum CalendarEventType {
+  INSPECTION
+  EXPERTISE
+  CALL
+  FOLLOWUP
+  INSURER_DEADLINE
+  MEETING
+}
+
+model CalendarEvent {
+  id        String            @id @default(cuid())
+  tenantId  String
+  claimId   String?
+  claim     Claim?            @relation(fields: [claimId], references: [id])
+  type      CalendarEventType
+  title     String
+  startAt   DateTime
+  endAt     DateTime?
+  location  String?
+  createdAt DateTime          @default(now())
+
+  @@index([tenantId, startAt])
+}
+
+// ============================================================================
+// FINANCEIRO
+// ============================================================================
+
+enum FinancialEntryType {
+  COST
+  FEE
+  EXPENSE
+  INDEMNITY
+  PAYMENT
+  REFUND
+  COMMISSION
+}
+
+model FinancialEntry {
+  id          String             @id @default(cuid())
+  tenantId    String
+  claimId     String?
+  claim       Claim?             @relation(fields: [claimId], references: [id])
+  type        FinancialEntryType
+  description String?
+  amount      Decimal            @db.Decimal(14, 2)
+  currency    String             @default("BRL")
+  dueDate     DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime           @default(now())
+
+  @@index([tenantId, claimId])
+}
+
+// ============================================================================
+// AUDITORIA (append-only, nunca update/delete)
+// ============================================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String   // LOGIN | LOGOUT | UPLOAD | DOWNLOAD | UPDATE | DELETE_REQUEST
+  entityType String?
+  entityId   String?
+  ipAddress  String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}
+
+

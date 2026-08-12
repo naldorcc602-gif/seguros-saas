@@ -1,0 +1,34 @@
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+.next/
+dist/
+build/
+.turbo/
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# Prisma
+packages/database/prisma/migrations/dev/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Testes
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db

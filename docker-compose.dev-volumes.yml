@@ -1,0 +1,40 @@
+# Compose para desenvolvimento com volumes montados
+# Monta o projeto inteiro e roda API em modo watch
+# Dependências já estão no container, só precisamos montar o código
+# Uso: docker compose -f docker-compose.dev-volumes.yml up
+name: seguros-saas-dev
+services:
+  api:
+    image: seguros-saas-api:latest
+    working_dir: /repo
+    command: sh -c "mkdir -p node_modules/@seguros && ln -sf ../../packages/database node_modules/@seguros/database 2>/dev/null || true && ln -sf ../../packages/schemas node_modules/@seguros/schemas 2>/dev/null || true && npm run dev --workspace=@seguros/api"
+    volumes:
+      - .:/repo
+    env_file: .env
+    environment:
+      NODE_ENV: development
+      NODE_PATH: "/repo/node_modules:/repo/apps/api/node_modules"
+    ports:
+      - "3001:3001"
+    networks:
+      - seguros-net
+    stdin_open: true
+    tty: true
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - seguros-net
+networks:
+  seguros-net:
+    driver: bridge
+volumes:
+  minio-data:

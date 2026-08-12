@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    # Serviços auxiliares para os testes e2e (test:e2e roda só manualmente/
+    # sob demanda, não neste job — ver comentário no final do arquivo).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: seguros_saas_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Gerar Prisma Client
+        run: npm run db:generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check (build)
+        run: npm run build
+
+      - name: Testes unitários — @seguros/schemas
+        run: npm run test --workspace=@seguros/schemas
+
+      - name: Testes unitários — @seguros/api
+        run: npm run test --workspace=@seguros/api
+
+      # Os testes e2e (apps/api/test/*.e2e-spec.ts) fazem chamadas HTTP reais
+      # contra a aplicação inteira (login, criação de sinistro, etc.) e
+      # criam dados de verdade no banco — propositalmente não rodam neste
+      # job automático a cada PR (o Postgres/Redis do CI existem para uma
+      # eventual execução manual/agendada, não incondicional). Para rodar:
+      #   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/seguros_saas_test \
+      #   REDIS_URL=redis://localhost:6379 \
+      #   npm run test:e2e --workspace=@seguros/api

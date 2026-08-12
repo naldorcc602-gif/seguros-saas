@@ -1,0 +1,30 @@
+{
+  "name": "seguros-saas",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Sistema de Regulação e Gestão de Sinistros — monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:generate": "npm run generate --workspace=@seguros/database",
+    "db:seed": "npm run db:seed --workspace=@seguros/database",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.0",
+    "prettier": "^3.3.3",
+    "husky": "^9.1.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10.8.0"
+}

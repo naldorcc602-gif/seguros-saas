@@ -1,0 +1,35 @@
+name: Deploy — Produção
+
+# Igual ao de homologação, mas aponta para o "Environment" `producao` do
+# GitHub — configure lá (Settings → Environments → producao → Required
+# reviewers) para exigir aprovação manual de alguém antes do job rodar de
+# verdade. workflow_dispatch + Environment protection é o equivalente do
+# GitHub Actions a um botão de "confirmar deploy" com um gate humano.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite "deploy-producao" para confirmar (não é engano)'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'deploy-producao'
+    environment: producao
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/seguros-saas
+            ./infra/scripts/deploy.sh producao
+
+      - name: Smoke test externo (via domínio público)
+        run: |
+          curl -f "${{ secrets.PROD_BASE_URL }}/api/health" || exit 1
+          echo "Produção respondendo em ${{ secrets.PROD_BASE_URL }}"

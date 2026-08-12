@@ -1,0 +1,56 @@
+# Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Sobrepõe o compose principal para desenvolvimento local:
+#  - Monta o código-fonte como volume (hot-reload)
+#  - Expõe as portas de web/api diretamente (sem depender do Nginx)
+#  - Roda em modo "dev" em vez da imagem de produção buildada
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      target: deps
+    command: sh -c "npx prisma generate --schema=packages/database/prisma/schema.prisma && npm run dev --workspace=@seguros/api"
+    volumes:
+      - .:/repo
+      - /repo/node_modules
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+
+  web:
+    build:
+      target: deps
+    command: sh -c "npm run dev --workspace=@seguros/web"
+    volumes:
+      - .:/repo
+      - /repo/node_modules
+      - /repo/apps/web/.next
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+
+  workers:
+    build:
+      target: deps
+    command: sh -c "npx prisma generate --schema=packages/database/prisma/schema.prisma && npm run dev --workspace=@seguros/workers"
+    volumes:
+      - .:/repo
+      - /repo/node_modules
+    environment:
+      NODE_ENV: development
+
+  # Nginx e certbot não são necessários em desenvolvimento local
+  nginx:
+    profiles: ["prod-only"]
+  certbot:
+    profiles: ["prod-only"]

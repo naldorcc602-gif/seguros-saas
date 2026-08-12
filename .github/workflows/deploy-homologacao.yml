@@ -1,0 +1,38 @@
+name: Deploy — Homologação
+
+# Disparo manual de propósito: deploy em homologação é uma decisão
+# deliberada (rodar depois que a CI da branch já passou), não algo que
+# deveria acontecer sozinho a cada push — evita surpresas de alguém abrir um
+# PR e sem querer disparar um deploy.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite "deploy" para confirmar'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'deploy'
+    environment: homologacao # usa os secrets do "Environment" homologacao do GitHub, com approval opcional
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOMOLOG_SSH_HOST }}
+          username: ${{ secrets.HOMOLOG_SSH_USER }}
+          key: ${{ secrets.HOMOLOG_SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/seguros-saas
+            ./infra/scripts/deploy.sh homologacao
+
+      # O smoke-test já roda dentro de deploy.sh (falha o deploy se algo
+      # estiver quebrado), mas rodamos de novo aqui, de fora, para confirmar
+      # que o domínio público/SSL também estão acessíveis — não só o
+      # localhost do próprio servidor.
+      - name: Smoke test externo (via domínio público)
+        run: |
+          curl -f "${{ secrets.HOMOLOG_BASE_URL }}/api/health" || exit 1
+          echo "Homologação respondendo em ${{ secrets.HOMOLOG_BASE_URL }}"

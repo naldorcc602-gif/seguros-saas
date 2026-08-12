@@ -1,0 +1,10 @@
+{
+  "name": "@seguros/ui",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Design system compartilhado (base shadcn/ui + tokens de tema claro/escuro).",
+  "main": "./src/index.ts",
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

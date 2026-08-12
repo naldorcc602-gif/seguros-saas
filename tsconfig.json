@@ -1,0 +1,15 @@
+{
+  "extends": "./packages/config/tsconfig.dev.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@seguros/database": ["packages/database", "packages/database/src/index.ts"],
+      "@seguros/schemas": ["packages/schemas", "packages/schemas/src/index.ts"],
+      "@seguros/ui": ["packages/ui", "packages/ui/src/index.ts"],
+      "@seguros/config": ["packages/config", "packages/config/src/index.ts"],
+      "@seguros/api/*": ["apps/api/src/*"]
+    }
+  },
+  "include": ["apps/**/*.ts", "packages/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -2,7 +2,7 @@
   "name": "seguros-saas",
   "private": true,
   "version": "0.1.0",
-  "description": "Sistema de Regulação e Gestão de Sinistros — monorepo",
+  "description": "Sistema de RegulaÃ§Ã£o e GestÃ£o de Sinistros â€” monorepo",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -15,7 +15,7 @@
     "db:generate": "npm run generate --workspace=@seguros/database",
     "db:seed": "npm run db:seed --workspace=@seguros/database",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "prepare": "husky install"
+    "prepare": "husky install || exit 0"
   },
   "devDependencies": {
     "husky": "^9.1.0",
@@ -31,3 +31,4 @@
     "lucide-react": "^0.446.0"
   }
 }
+

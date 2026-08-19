@@ -8,6 +8,7 @@ export function toDocumentItem(doc: any): DocumentItem {
     fileName: doc.fileName,
     mimeType: doc.mimeType,
     sizeBytes: doc.sizeBytes,
+    externalUrl: doc.externalUrl ?? null,
     status: doc.status,
     checklistItemId: doc.checklistItemId,
     uploadedByClient: doc.uploadedByClient,
@@ -28,4 +29,5 @@ export function toChecklistItem(item: any) {
     documents: item.documents.map(toDocumentItem),
   };
 }
+
 

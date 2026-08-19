@@ -8,6 +8,7 @@ import { DocumentStatusBadge } from '@/components/documents/DocumentStatusBadge'
 import { FileDropZone } from '@/components/documents/FileDropZone';
 import { OcrFieldsReview } from '@/components/documents/OcrFieldsReview';
 import {
+  useAttachLink,
   useChecklist,
   useClaimDocuments,
   useUpdateChecklistItemStatus,
@@ -17,9 +18,77 @@ import {
 import { useRealtimeDocuments } from '@/hooks/useRealtimeDocuments';
 import { documentsApi } from '@/lib/documents-api';
 
-function formatSize(bytes: number): string {
+function formatSize(bytes: number | null): string {
+  if (bytes === null) return '—';
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function AttachLinkForm({
+  onAttach,
+  isPending,
+}: {
+  onAttach: (fileName: string, url: string) => void;
+  isPending: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [fileName, setFileName] = useState('');
+  const [url, setUrl] = useState('');
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+      >
+        <LinkIcon size={12} /> Colar link em vez de anexar arquivo
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!fileName.trim() || !url.trim()) return;
+        onAttach(fileName.trim(), url.trim());
+        setFileName('');
+        setUrl('');
+        setOpen(false);
+      }}
+      className="flex flex-col gap-2 rounded-md border border-border bg-bg p-2"
+    >
+      <input
+        value={fileName}
+        onChange={(e) => setFileName(e.target.value)}
+        placeholder="Nome do documento"
+        className="rounded-md border border-border bg-surface px-2 py-1.5 text-xs text-ink outline-none focus:border-primary"
+      />
+      <input
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        placeholder="https://…"
+        type="url"
+        className="rounded-md border border-border bg-surface px-2 py-1.5 text-xs text-ink outline-none focus:border-primary"
+      />
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-hover disabled:opacity-60"
+        >
+          Anexar link
+        </button>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="rounded-md px-3 py-1.5 text-xs font-medium text-muted hover:bg-surface-hover"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  );
 }
 
 export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
@@ -28,6 +97,7 @@ export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
   const { data: checklist } = useChecklist(claim.id);
   const { data: documents } = useClaimDocuments(claim.id);
   const upload = useUploadDocument(claim.id);
+  const attachLink = useAttachLink(claim.id);
   const updateChecklistStatus = useUpdateChecklistItemStatus(claim.id);
   const uploadLinks = useUploadLinks(claim.id);
 
@@ -43,6 +113,10 @@ export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
         setUploadingProgress(null);
       }
     }
+  };
+
+  const handleAttachLink = (fileName: string, url: string, checklistItemId?: string) => {
+    attachLink.mutate({ fileName, url, checklistItemId });
   };
 
   const handleDownload = async (documentId: string) => {
@@ -134,7 +208,7 @@ export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
                       <li key={doc.id}>
                         <div className="flex items-center justify-between text-xs">
                           <button onClick={() => handleDownload(doc.id)} className="truncate text-primary hover:underline">
-                            {doc.fileName}
+                            {doc.fileName} {doc.externalUrl && '(link)'}
                           </button>
                           <span className="flex shrink-0 items-center gap-2 text-muted">
                             {formatSize(doc.sizeBytes)}
@@ -147,8 +221,12 @@ export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
                   </ul>
                 )}
 
-                <div className="mt-2">
+                <div className="mt-2 space-y-2">
                   <FileDropZone onFilesSelected={(files) => handleFiles(files, item.id)} disabled={upload.isPending} />
+                  <AttachLinkForm
+                    isPending={attachLink.isPending}
+                    onAttach={(fileName, url) => handleAttachLink(fileName, url, item.id)}
+                  />
                 </div>
               </div>
             ))}
@@ -165,8 +243,12 @@ export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
         {uploadingProgress !== null && (
           <p className="mt-2 text-xs text-muted">Enviando… {uploadingProgress}%</p>
         )}
-        <div className="mt-2">
+        <div className="mt-2 space-y-2">
           <FileDropZone onFilesSelected={(files) => handleFiles(files)} disabled={upload.isPending} />
+          <AttachLinkForm
+            isPending={attachLink.isPending}
+            onAttach={(fileName, url) => handleAttachLink(fileName, url)}
+          />
         </div>
         {documentsWithoutChecklist.length > 0 && (
           <ul className="mt-3 space-y-1">
@@ -174,7 +256,7 @@ export function DocumentsTab({ claim }: { claim: ClaimDetail }) {
               <li key={doc.id}>
                 <div className="flex items-center justify-between text-xs">
                   <button onClick={() => handleDownload(doc.id)} className="truncate text-primary hover:underline">
-                    {doc.fileName}
+                    {doc.fileName} {doc.externalUrl && '(link)'}
                   </button>
                   <span className="flex shrink-0 items-center gap-2 text-muted">
                     {formatSize(doc.sizeBytes)}

@@ -4,3 +4,4 @@ export * from './confirm-upload.dto';
 export * from './update-status.dto';
 export * from './checklist-template.dto';
 
+export * from './attach-link.dto';

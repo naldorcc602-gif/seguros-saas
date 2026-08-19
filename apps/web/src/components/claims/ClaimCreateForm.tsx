@@ -55,10 +55,14 @@ export function ClaimCreateForm() {
   const onSubmit = async (values: CreateClaimInput) => {
     setApiError(null);
     try {
-      const created = await claimsApi.create(values);
+      const payload = {
+        ...values,
+        occurredAt: values.occurredAt ? new Date(values.occurredAt).toISOString() : undefined,
+      };
+      const created = await claimsApi.create(payload);
       router.push(`/sinistros/${created.id}`);
     } catch (err) {
-      setApiError(err instanceof ApiError ? err.message : 'Não foi possível abrir o sinistro.');
+      setApiError(err instanceof ApiError ? err.message : 'NÃ£o foi possÃ­vel abrir o sinistro.');
     }
   };
 
@@ -90,7 +94,7 @@ export function ClaimCreateForm() {
         <Field label="E-mail">
           <input type="email" className={inputClass} {...register('clientEmail')} />
         </Field>
-        <Field label="Endereço">
+        <Field label="EndereÃ§o">
           <input className={inputClass} {...register('clientAddress')} />
         </Field>
         <Field label="Cidade">
@@ -104,10 +108,10 @@ export function ClaimCreateForm() {
         </Field>
       </Section>
 
-      <Section title="Vínculos e apólice">
+      <Section title="VÃ­nculos e apÃ³lice">
         <Field label="Seguradora">
           <select className={inputClass} {...register('insurerId')}>
-            <option value="">—</option>
+            <option value="">â€”</option>
             {insurers?.map((i) => (
               <option key={i.id} value={i.id}>
                 {i.name}
@@ -117,7 +121,7 @@ export function ClaimCreateForm() {
         </Field>
         <Field label="Corretor">
           <select className={inputClass} {...register('brokerId')}>
-            <option value="">—</option>
+            <option value="">â€”</option>
             {brokers?.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -125,10 +129,10 @@ export function ClaimCreateForm() {
             ))}
           </select>
         </Field>
-        <Field label="Nº na seguradora">
+        <Field label="NÂº na seguradora">
           <input className={inputClass} {...register('insurerNumber')} />
         </Field>
-        <Field label="Nº da apólice">
+        <Field label="NÂº da apÃ³lice">
           <input className={inputClass} {...register('policyNumber')} />
         </Field>
         <Field label="Produto *">
@@ -152,14 +156,14 @@ export function ClaimCreateForm() {
         <Field label="Prioridade">
           <select className={inputClass} {...register('priority')}>
             <option value="LOW">Baixa</option>
-            <option value="MEDIUM">Média</option>
+            <option value="MEDIUM">MÃ©dia</option>
             <option value="HIGH">Alta</option>
-            <option value="CRITICAL">Crítica</option>
+            <option value="CRITICAL">CrÃ­tica</option>
           </select>
         </Field>
       </Section>
 
-      <Section title="Veículo (quando aplicável)">
+      <Section title="VeÃ­culo (quando aplicÃ¡vel)">
         <Field label="Placa">
           <input className={inputClass} {...register('vehiclePlate')} />
         </Field>
@@ -177,7 +181,7 @@ export function ClaimCreateForm() {
         </Field>
       </Section>
 
-      <Section title="Ocorrência">
+      <Section title="OcorrÃªncia">
         <Field label="Data e hora">
           <input type="datetime-local" className={inputClass} {...register('occurredAt')} />
         </Field>
@@ -194,12 +198,12 @@ export function ClaimCreateForm() {
           <input type="number" step="0.01" min={0} className={inputClass} {...register('estimatedValue', { valueAsNumber: true })} />
         </Field>
         <div className="sm:col-span-2 lg:col-span-3">
-          <Field label="Descrição">
+          <Field label="DescriÃ§Ã£o">
             <textarea rows={3} className={inputClass} {...register('description')} />
           </Field>
         </div>
         <div className="sm:col-span-2 lg:col-span-3">
-          <Field label="Observações">
+          <Field label="ObservaÃ§Ãµes">
             <textarea rows={2} className={inputClass} {...register('notes')} />
           </Field>
         </div>
@@ -225,7 +229,7 @@ export function ClaimCreateForm() {
                 {...register(`thirdParties.${index}.phone` as const)}
               />
               <input
-                placeholder="Placa do veículo"
+                placeholder="Placa do veÃ­culo"
                 className={inputClass}
                 {...register(`thirdParties.${index}.vehiclePlate` as const)}
               />
@@ -261,9 +265,10 @@ export function ClaimCreateForm() {
           disabled={isSubmitting}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-60"
         >
-          {isSubmitting ? 'Salvando…' : 'Abrir sinistro'}
+          {isSubmitting ? 'Salvandoâ€¦' : 'Abrir sinistro'}
         </button>
       </div>
     </form>
   );
 }
+

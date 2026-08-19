@@ -1,6 +1,9 @@
 import type {
+  AttachLinkInput,
   ChecklistItem,
+  ChecklistTemplateItem,
   ConfirmUploadInput,
+  CreateChecklistTemplateItemInput,
   DocumentItem,
   PresignUploadInput,
   PresignUploadResponse,
@@ -18,6 +21,12 @@ export const documentsApi = {
 
   confirm: (claimId: string, input: ConfirmUploadInput) =>
     apiFetch<DocumentItem>(`/claims/${claimId}/documents/confirm`, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  attachLink: (claimId: string, input: AttachLinkInput) =>
+    apiFetch<DocumentItem>(`/claims/${claimId}/documents/link`, {
       method: 'POST',
       body: JSON.stringify(input),
     }),
@@ -60,4 +69,18 @@ export const documentsApi = {
     }),
 
   listUploadLinks: (claimId: string) => apiFetch<UploadLinkItem[]>(`/claims/${claimId}/upload-links`),
+
+  listChecklistTemplates: (productType?: string) => {
+    const query = productType ? `?productType=${productType}` : '';
+    return apiFetch<ChecklistTemplateItem[]>(`/checklist-templates${query}`);
+  },
+
+  createChecklistTemplate: (input: CreateChecklistTemplateItemInput) =>
+    apiFetch<ChecklistTemplateItem>('/checklist-templates', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  removeChecklistTemplate: (id: string) =>
+    apiFetch<void>(`/checklist-templates/${id}`, { method: 'DELETE' }),
 };

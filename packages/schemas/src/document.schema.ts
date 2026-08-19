@@ -20,7 +20,7 @@ export const DOCUMENT_STATUS_LABELS: Record<DocumentStatus, string> = {
   RESUBMISSION_REQUESTED: 'Reenvio solicitado',
 };
 
-/** Tipos de arquivo aceitos (escopo original: PDF, imagens, DOCX/XLSX, ZIP/RAR, vídeo). */
+/** Tipos de arquivo aceitos (escopo original: PDF, imagens, DOCX/XLSX, ZIP/RAR, vÃ­deo). */
 export const ACCEPTED_MIME_TYPES = [
   'application/pdf',
   'image/png',
@@ -34,7 +34,7 @@ export const ACCEPTED_MIME_TYPES = [
   'video/quicktime',
 ] as const;
 
-export const MAX_UPLOAD_SIZE_BYTES = 200 * 1024 * 1024; // 200MB (cobre vídeos curtos de vistoria)
+export const MAX_UPLOAD_SIZE_BYTES = 200 * 1024 * 1024; // 200MB (cobre vÃ­deos curtos de vistoria)
 
 export const presignUploadSchema = z.object({
   fileName: z.string().min(1),
@@ -60,11 +60,19 @@ export const confirmUploadSchema = z.object({
 });
 export type ConfirmUploadInput = z.infer<typeof confirmUploadSchema>;
 
+export const attachLinkSchema = z.object({
+  url: z.string().url('Informe uma URL vÃ¡lida.'),
+  fileName: z.string().min(1),
+  checklistItemId: z.string().optional(),
+});
+export type AttachLinkInput = z.infer<typeof attachLinkSchema>;
+
 export const documentItemSchema = z.object({
   id: z.string(),
   fileName: z.string(),
-  mimeType: z.string(),
-  sizeBytes: z.number(),
+  mimeType: z.string().nullable(),
+  sizeBytes: z.number().nullable(),
+  externalUrl: z.string().nullable(),
   status: documentStatusEnum,
   checklistItemId: z.string().nullable(),
   uploadedByClient: z.boolean(),
@@ -115,7 +123,7 @@ export const uploadLinkSchema = z.object({
 });
 export type UploadLinkItem = z.infer<typeof uploadLinkSchema>;
 
-/** O que o portal público (sem login) recebe ao validar o token. */
+/** O que o portal pÃºblico (sem login) recebe ao validar o token. */
 export const portalClaimInfoSchema = z.object({
   internalNumber: z.string(),
   clientName: z.string(),
@@ -129,4 +137,5 @@ export const portalConfirmUploadSchema = confirmUploadSchema.extend({
   geoLocation: z.string().optional(),
 });
 export type PortalConfirmUploadInput = z.infer<typeof portalConfirmUploadSchema>;
+
 

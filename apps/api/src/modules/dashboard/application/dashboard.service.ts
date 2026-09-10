@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { CLAIM_STAGE_LABELS, ClaimStage, DashboardSummary } from '@seguros/schemas';
 
@@ -69,4 +68,3 @@ export class DashboardService {
     };
   }
 }
-

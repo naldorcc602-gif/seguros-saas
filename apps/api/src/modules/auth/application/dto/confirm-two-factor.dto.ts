@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsString, Length } from 'class-validator';
 
 export class ConfirmTwoFactorDto {
@@ -6,4 +5,3 @@ export class ConfirmTwoFactorDto {
   @Length(6, 6)
   code!: string;
 }
-

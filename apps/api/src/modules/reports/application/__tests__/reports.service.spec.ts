@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ReportsService } from '../reports.service';
 
 function makeRepositoryMock() {
@@ -29,7 +28,7 @@ describe('ReportsService.slaCompliance', () => {
     const result = await service.slaCompliance();
 
     expect(result.overall.compliancePct).toBe(80);
-    expect(result.byInsurer[0].compliancePct).toBe(100);
+    expect(result.byInsurer[0]!.compliancePct).toBe(100);
   });
 
   it('retorna compliancePct null quando não há nenhum sinistro com SLA definido (evita divisão por zero)', async () => {
@@ -64,4 +63,3 @@ describe('ReportsService.getByKey', () => {
     await expect(service.getByKey('relatorio-inexistente')).rejects.toThrow();
   });
 });
-

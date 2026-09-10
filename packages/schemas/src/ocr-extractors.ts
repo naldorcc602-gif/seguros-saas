@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { OcrFieldKey } from './ocr-ai.schema';
 
 /**
@@ -80,4 +79,3 @@ export function extractAllFields(text: string): Partial<Record<OcrFieldKey, stri
 
   return fields;
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { PartialType, OmitType } from '@nestjs/swagger';
 
 import { CreateClaimDto } from './create-claim.dto';
@@ -24,4 +23,3 @@ export class UpdateClaimDto extends PartialType(
     'thirdParties',
   ] as const),
 ) {}
-

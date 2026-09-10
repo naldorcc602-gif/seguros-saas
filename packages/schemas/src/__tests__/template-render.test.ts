@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { renderTemplateString } from '../template-render';
 
 describe('renderTemplateString', () => {
@@ -30,4 +29,3 @@ describe('renderTemplateString', () => {
     expect(renderTemplateString('texto simples sem variáveis', {})).toBe('texto simples sem variáveis');
   });
 });
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { toClaimListItem, toKanbanCard } from '../claim.mapper';
 
 function makeClaim(overrides: Partial<Record<string, unknown>> = {}) {
@@ -63,4 +62,3 @@ describe('toClaimListItem', () => {
     expect(toClaimListItem(claim as never)).toEqual(toKanbanCard(claim as never));
   });
 });
-

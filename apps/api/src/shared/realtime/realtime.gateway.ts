@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -81,4 +80,3 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     this.server.to(`user:${userId}`).emit(event, payload);
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -91,4 +90,3 @@ export class ClaimsController {
     return this.claimsService.addComment(id, dto);
   }
 }
-

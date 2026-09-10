@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, prisma, UserRole } from '@seguros/database';
 
@@ -70,4 +69,3 @@ export class EmailTemplatesRepository {
     return this.findByKey(key);
   }
 }
-

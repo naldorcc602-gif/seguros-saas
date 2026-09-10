@@ -1,4 +1,3 @@
-// @ts-nocheck
 import nodemailer from 'nodemailer';
 
 /**
@@ -29,4 +28,3 @@ export function createMailTransport() {
 }
 
 export const MAIL_FROM = process.env.SMTP_FROM ?? 'naoresponda@seudominio.com';
-

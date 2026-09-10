@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { prisma } from '@seguros/database';
@@ -89,4 +88,3 @@ export function startOcrWorker(): Worker<OcrJobPayload> {
 
   return worker;
 }
-

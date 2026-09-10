@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, getCurrentUserId } from '@seguros/database';
 import type { DocumentItem, PortalClaimInfo, PresignUploadResponse, UploadLinkItem } from '@seguros/schemas';
@@ -18,7 +17,6 @@ import { OcrQueueService } from '../infrastructure/ocr-queue.service';
 import { StorageService } from '../infrastructure/storage.service';
 import { toChecklistItem, toDocumentItem } from './document.mapper';
 import {
-  AttachLinkDto,
   ConfirmUploadDto,
   CreateChecklistTemplateDto,
   GenerateUploadLinkDto,
@@ -35,7 +33,7 @@ export class DocumentsService {
     private readonly ocrQueueService: OcrQueueService,
   ) {}
 
-  // â”€â”€ Upload autenticado (regulador/assistente anexando documentos) â”€â”€â”€â”€
+  // ── Upload autenticado (regulador/assistente anexando documentos) ────
 
   async presignUpload(claimId: string, dto: PresignUploadDto): Promise<PresignUploadResponse> {
     const tenantId = getCurrentTenantId()!;
@@ -73,27 +71,6 @@ export class DocumentsService {
     return toDocumentItem(doc);
   }
 
-  async attachLink(claimId: string, dto: AttachLinkDto): Promise<DocumentItem> {
-    const userId = getCurrentUserId();
-    const doc = await this.documentsRepository.create({
-      claimId,
-      fileName: dto.fileName,
-      externalUrl: dto.url,
-      checklistItemId: dto.checklistItemId,
-      uploadedByUserId: userId,
-      uploadedByClient: false,
-    });
-    if (!doc) throw new ClaimNotFoundForUploadError();
-
-    if (dto.checklistItemId) {
-      await this.documentsRepository.updateChecklistItemStatus(dto.checklistItemId, 'RECEIVED');
-    }
-
-    this.broadcastUpload(doc.tenantId, claimId, doc);
-    await this.notifyDocumentEvent(claimId, 'uploaded', doc.fileName);
-    return toDocumentItem(doc);
-  }
-
   async listByClaim(claimId: string): Promise<DocumentItem[]> {
     const docs = await this.documentsRepository.listByClaim(claimId);
     return docs.map(toDocumentItem);
@@ -102,10 +79,7 @@ export class DocumentsService {
   async getDownloadUrl(documentId: string): Promise<{ url: string; fileName: string }> {
     const doc = await this.documentsRepository.findById(documentId);
     if (!doc) throw new DocumentNotFoundError();
-    if (doc.externalUrl) {
-      return { url: doc.externalUrl, fileName: doc.fileName };
-    }
-    const url = await this.storageService.getPresignedDownloadUrl(doc.storageKey!);
+    const url = await this.storageService.getPresignedDownloadUrl(doc.storageKey);
     return { url, fileName: doc.fileName };
   }
 
@@ -120,7 +94,7 @@ export class DocumentsService {
     return toDocumentItem(doc);
   }
 
-  // â”€â”€ VersÃµes (reenvio de um documento jÃ¡ existente) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Versões (reenvio de um documento já existente) ───────────────────
 
   async presignNewVersion(documentId: string, dto: PresignUploadDto): Promise<PresignUploadResponse> {
     const existing = await this.documentsRepository.findById(documentId);
@@ -144,7 +118,7 @@ export class DocumentsService {
     return toDocumentItem(updated);
   }
 
-  // â”€â”€ Checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Checklist ─────────────────────────────────────────────────────
 
   async listChecklist(claimId: string) {
     const items = await this.documentsRepository.listChecklistByClaim(claimId);
@@ -174,7 +148,7 @@ export class DocumentsService {
     return this.documentsRepository.removeChecklistTemplate(id);
   }
 
-  // â”€â”€ Links de upload (portal do cliente) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Links de upload (portal do cliente) ─────────────────────────────
 
   async generateUploadLink(claimId: string, dto: GenerateUploadLinkDto): Promise<UploadLinkItem> {
     const expiresAt = dto.expiresInDays
@@ -200,7 +174,7 @@ export class DocumentsService {
     };
   }
 
-  // â”€â”€ Portal pÃºblico (sem login) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Portal público (sem login) ───────────────────────────────────────
 
   private async validateToken(token: string) {
     const link = await this.documentsRepository.findUploadLinkByToken(token);
@@ -253,8 +227,8 @@ export class DocumentsService {
     await this.documentsRepository.markUploadLinkUsed(link.id);
 
     this.broadcastUpload(doc.tenantId, link.claimId, doc);
-    // Notifica a equipe interna (sino) que o CLIENTE enviou um documento pelo portal â€”
-    // nÃ£o dispara e-mail para o prÃ³prio cliente aqui (ele jÃ¡ sabe, acabou de enviar).
+    // Notifica a equipe interna (sino) que o CLIENTE enviou um documento pelo portal —
+    // não dispara e-mail para o próprio cliente aqui (ele já sabe, acabou de enviar).
     await this.notifyDocumentEvent(link.claimId, 'uploaded', doc.fileName);
     await this.ocrQueueService.enqueueIfEligible({
       tenantId: doc.tenantId,
@@ -274,14 +248,14 @@ export class DocumentsService {
     });
   }
 
-  /** Monta o contexto e dispara a notificaÃ§Ã£o de evento de documento (Fase 10). */
+  /** Monta o contexto e dispara a notificação de evento de documento (Fase 10). */
   private async notifyDocumentEvent(
     claimId: string,
     kind: 'uploaded' | 'approved' | 'rejected' | 'pending',
     fileName: string,
   ): Promise<void> {
     const claim = await this.documentsRepository.getClaimNotificationContext(claimId);
-    if (!claim) return; // nÃ£o deveria acontecer (documento sempre tem um claim vÃ¡lido), mas nÃ£o Ã© motivo para quebrar o upload
+    if (!claim) return; // não deveria acontecer (documento sempre tem um claim válido), mas não é motivo para quebrar o upload
 
     const ctx: ClaimNotificationContext = {
       tenantId: claim.tenantId,
@@ -294,5 +268,3 @@ export class DocumentsService {
     await this.notificationsService.notifyDocumentEvent(ctx, kind, fileName);
   }
 }
-
-

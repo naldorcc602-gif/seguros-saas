@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { prisma, UserRole } from '@seguros/database';
 
@@ -110,7 +109,7 @@ export class UsersRepository {
       // manual prévia. É apenas uma constante de dados (não um serviço do
       // módulo Documents), então não cria dependência circular entre módulos.
       await tx.checklistTemplateItem.createMany({
-        data: DEFAULT_CHECKLIST_TEMPLATES.map((t) => ({ ...t, tenantId: tenant.id })) as any,
+        data: DEFAULT_CHECKLIST_TEMPLATES.map((t) => ({ ...t, tenantId: tenant.id, productType: t.productType as never })),
       });
 
       await tx.emailTemplate.createMany({
@@ -121,4 +120,3 @@ export class UsersRepository {
     });
   }
 }
-

@@ -1,5 +1,5 @@
 // ============================================================================
-// Sistema de RegulaÃƒÂ§ÃƒÂ£o de Sinistros Ã¢â‚¬â€ Schema Prisma (Fase 2)
+// Sistema de Regulação de Sinistros — Schema Prisma (Fase 2)
 // PostgreSQL | Multi-tenant via tenantId em todas as tabelas relevantes
 // ============================================================================
 
@@ -13,7 +13,7 @@ datasource db {
 }
 
 // ============================================================================
-// TENANT & CONFIGURAÃƒâ€¡Ãƒâ€¢ES
+// TENANT & CONFIGURAÇÕES
 // ============================================================================
 
 model Tenant {
@@ -60,7 +60,7 @@ model TenantSettings {
 }
 
 // ============================================================================
-// USUÃƒÂRIOS, AUTENTICAÃƒâ€¡ÃƒÆ’O E RBAC
+// USUÁRIOS, AUTENTICAÇÃO E RBAC
 // ============================================================================
 
 enum UserRole {
@@ -86,9 +86,9 @@ model User {
   twoFactorEnabled  Boolean   @default(false)
   active            Boolean   @default(true)
   lastLoginAt       DateTime?
-  // Bloqueio de conta apÃƒÂ³s tentativas de login falhas (Fase 16 Ã¢â‚¬â€ hardening
-  // de produÃƒÂ§ÃƒÂ£o). failedLoginAttempts zera a cada login bem-sucedido;
-  // lockedUntil ÃƒÂ© null enquanto a conta nÃƒÂ£o estiver bloqueada.
+  // Bloqueio de conta após tentativas de login falhas (Fase 16 — hardening
+  // de produção). failedLoginAttempts zera a cada login bem-sucedido;
+  // lockedUntil é null enquanto a conta não estiver bloqueada.
   failedLoginAttempts Int     @default(0)
   lockedUntil       DateTime?
   createdAt         DateTime  @default(now())
@@ -100,7 +100,6 @@ model User {
   authoredTasks     Task[]           @relation("TaskAssignee")
   notifications     Notification[]
   auditLogs         AuditLog[]
-  uploadedDocuments Document[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -274,14 +273,14 @@ model ThirdParty {
 enum ClaimStage {
   NEW                  // Novo
   INITIAL_CONTACT      // Contato Inicial
-  DOCS_PENDING         // DocumentaÃƒÂ§ÃƒÂ£o Pendente
-  DOCS_RECEIVED        // DocumentaÃƒÂ§ÃƒÂ£o Recebida
-  ANALYSIS             // AnÃƒÂ¡lise
+  DOCS_PENDING         // Documentação Pendente
+  DOCS_RECEIVED        // Documentação Recebida
+  ANALYSIS             // Análise
   INSPECTION           // Vistoria
-  ADJUSTMENT           // RegulaÃƒÂ§ÃƒÂ£o
+  ADJUSTMENT           // Regulação
   INSURER              // Seguradora
   PAYMENT              // Pagamento
-  COMPLETED            // ConcluÃƒÂ­do
+  COMPLETED            // Concluído
   DENIED               // Negado
 }
 
@@ -309,7 +308,7 @@ model Claim {
   id             String   @id @default(cuid())
   tenantId       String
   tenant         Tenant   @relation(fields: [tenantId], references: [id])
-  internalNumber String   // sequencial por tenant, gerado na aplicaÃƒÂ§ÃƒÂ£o
+  internalNumber String   // sequencial por tenant, gerado na aplicação
   insurerNumber  String?
 
   insurerId      String?
@@ -423,13 +422,11 @@ model Document {
   checklistItem     ClaimChecklistItem? @relation(fields: [checklistItemId], references: [id])
 
   fileName          String
-  mimeType          String?
-  sizeBytes         Int?
-  storageKey        String?             // chave no S3/R2 (null se for link externo)
-  externalUrl       String?             // URL externa (null se for arquivo enviado)
+  mimeType          String
+  sizeBytes         Int
+  storageKey        String              // chave no S3/R2
   status            DocumentStatus      @default(PENDING)
   uploadedByUserId  String?
-  uploadedByUser    User?               @relation(fields: [uploadedByUserId], references: [id])
   uploadedByClient  Boolean             @default(false)
   ipAddress         String?
   geoLocation       String?
@@ -482,7 +479,7 @@ model ClaimChecklistItem {
   @@index([claimId])
 }
 
-// Portal pÃƒÂºblico de upload (sem login)
+// Portal público de upload (sem login)
 model UploadLink {
   id        String    @id @default(cuid())
   claimId   String
@@ -496,10 +493,10 @@ model UploadLink {
 }
 
 // ============================================================================
-// TIMELINE, COMUNICAÃƒâ€¡ÃƒÆ’O E COMENTÃƒÂRIOS
+// TIMELINE, COMUNICAÇÃO E COMENTÁRIOS
 // ============================================================================
 
-// Append-only Ã¢â‚¬â€ nunca update/delete pela aplicaÃƒÂ§ÃƒÂ£o
+// Append-only — nunca update/delete pela aplicação
 model TimelineEvent {
   id            String   @id @default(cuid())
   tenantId      String
@@ -555,7 +552,7 @@ model Comment {
 }
 
 // ============================================================================
-// NOTIFICAÃƒâ€¡Ãƒâ€¢ES E E-MAIL
+// NOTIFICAÇÕES E E-MAIL
 // ============================================================================
 
 enum NotificationType {
@@ -708,6 +705,3 @@ model AuditLog {
 
   @@index([tenantId, createdAt])
 }
-
-
-

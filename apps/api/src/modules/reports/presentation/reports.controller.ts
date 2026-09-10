@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BadRequestException, Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@seguros/database';
@@ -77,4 +76,3 @@ export class ReportsController {
     res.send(buffer);
   }
 }
-

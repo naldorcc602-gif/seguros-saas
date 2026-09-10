@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { CLAIM_STAGE_LABELS, type ClaimStage } from '@seguros/schemas';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,4 +123,3 @@ export function buildHistorySummaryPrompt(claim: ClaimContext) {
     user: `Resuma a linha do tempo deste sinistro em ordem cronológica, em um parágrafo narrativo curto, sem listar cada evento individualmente — foque nos marcos importantes (abertura, mudanças de etapa, documentos-chave, decisões).\n\n${buildContextBlock(claim)}`,
   };
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { PrismaClient } from '@prisma/client';
 
 import { tenantScopedExtension } from './prisma-tenant-extension';
@@ -14,7 +13,6 @@ import { tenantScopedExtension } from './prisma-tenant-extension';
  * desde que o TenantContextInterceptor da API tenha populado o contexto.
  */
 declare global {
-  // eslint-disable-next-line no-var
   var __prisma: PrismaClient | undefined;
 }
 
@@ -28,4 +26,3 @@ export const prisma = basePrismaClient.$extends(tenantScopedExtension());
 
 export * from '@prisma/client';
 export * from './request-context';
-

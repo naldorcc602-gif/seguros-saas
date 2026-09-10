@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -30,4 +29,3 @@ import { PortalController } from './presentation/portal.controller';
   providers: [DocumentsService, DocumentsRepository, StorageService, OcrQueueService],
 })
 export class DocumentsModule {}
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 export interface RequestContext {
@@ -23,4 +22,3 @@ export function getCurrentTenantId(): string | undefined {
 export function getCurrentUserId(): string | undefined {
   return requestContextStorage.getStore()?.userId;
 }
-

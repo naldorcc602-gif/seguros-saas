@@ -3,8 +3,24 @@
   "private": true,
   "version": "0.1.0",
   "description": "Design system compartilhado (base shadcn/ui + tokens de tema claro/escuro).",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint \"src/**/*.ts\""
+  },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
   }
 }

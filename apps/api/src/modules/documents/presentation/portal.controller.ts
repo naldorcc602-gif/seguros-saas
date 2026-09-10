@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
@@ -51,4 +50,3 @@ export class PortalController {
     return this.documentsService.confirmPortalUpload(token, dto, req.ip);
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import type {
   FinancialReport,
@@ -75,4 +74,3 @@ export class ReportsService {
     }
   }
 }
-

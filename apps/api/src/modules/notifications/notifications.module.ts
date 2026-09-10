@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -38,4 +37,3 @@ import { NotificationsController } from './presentation/notifications.controller
   exports: [NotificationsService],
 })
 export class NotificationsModule {}
-

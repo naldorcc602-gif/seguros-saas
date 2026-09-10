@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { EMAIL_TEMPLATE_KEYS, renderTemplateString, type EmailTemplateItem, type PreviewEmailResponse } from '@seguros/schemas';
 
@@ -55,4 +54,3 @@ export class EmailTemplatesService {
     };
   }
 }
-

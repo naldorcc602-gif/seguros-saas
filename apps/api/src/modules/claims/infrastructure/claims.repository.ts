@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, prisma } from '@seguros/database';
 import type { ClaimPriority, ClaimProductType } from '@seguros/schemas';
@@ -370,4 +369,3 @@ export class ClaimsRepository {
     return prisma.claim.findFirst({ where: { id: claimId }, include: kanbanInclude });
   }
 }
-

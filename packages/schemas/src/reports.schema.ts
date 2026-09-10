@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 export const REPORT_KEYS = ['resolution-time', 'sla-compliance', 'financial', 'productivity', 'pending-documents'] as const;
@@ -106,4 +105,3 @@ export const pendingDocumentsReportSchema = z.object({
   rows: z.array(pendingDocumentRowSchema),
 });
 export type PendingDocumentsReport = z.infer<typeof pendingDocumentsReportSchema>;
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { prisma } from '@seguros/database';
 import type { AiResponse } from '@seguros/schemas';
@@ -90,4 +89,3 @@ export class OcrAiService {
     throw new Error(`Campo "${targetField}" não é um alvo válido para aplicação de dados de OCR.`);
   }
 }
-

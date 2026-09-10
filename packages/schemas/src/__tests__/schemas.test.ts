@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createClaimSchema } from '../claim-detail.schema';
 import { quickCreateClaimSchema } from '../claim.schema';
 import { clientSchema } from '../registry.schema';
@@ -80,4 +79,3 @@ describe('CLAIM_STAGE_LABELS', () => {
     }
   });
 });
-

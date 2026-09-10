@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 const baseRegistrySchema = z.object({
@@ -81,4 +80,3 @@ export const REGISTRY_LABELS: Record<RegistryKey, string> = {
   dispatchers: 'Despachantes',
   lawyers: 'Advogados',
 };
-

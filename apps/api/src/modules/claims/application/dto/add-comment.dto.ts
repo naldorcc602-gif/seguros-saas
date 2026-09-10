@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsString, MinLength } from 'class-validator';
 
 export class AddCommentDto {
@@ -6,4 +5,3 @@ export class AddCommentDto {
   @MinLength(1)
   content!: string;
 }
-

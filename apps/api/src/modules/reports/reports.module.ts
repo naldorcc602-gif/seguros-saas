@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Module } from '@nestjs/common';
 
 import { ExportService } from './application/export.service';
@@ -11,4 +10,3 @@ import { ReportsController } from './presentation/reports.controller';
   providers: [ReportsService, ReportsRepository, ExportService],
 })
 export class ReportsModule {}
-

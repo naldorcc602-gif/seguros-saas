@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Schemas Zod do domínio (ex: createClaimSchema, uploadDocumentSchema).
  * Serão adicionados a partir da Fase 8 (Cadastro de sinistros), um arquivo

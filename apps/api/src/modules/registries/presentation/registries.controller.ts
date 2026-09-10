@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@seguros/database';
@@ -205,4 +204,3 @@ export class RegistriesController {
     return this.registries.removeLawyer(id);
   }
 }
-

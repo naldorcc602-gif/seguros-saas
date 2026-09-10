@@ -3,40 +3,42 @@
 @tailwind utilities;
 
 :root {
-  --bg: #fafaf9;
+  --bg: #f5f6f8;
   --surface: #ffffff;
-  --surface-hover: #f2f1ee;
-  --ink: #17181c;
-  --muted: #75757e;
-  --border: #ebebe8;
-  --primary: #0f766e;
-  --primary-hover: #0b5f58;
-  --accent-amber: #d69a4a;
-  --accent-red: #c94f4f;
+  --surface-hover: #edf0f4;
+  --ink: #12213f;
+  --muted: #6b7280;
+  --border: #e4e7ec;
+
+  --primary: #1b7a72;
+  --primary-hover: #156059;
+  --accent-amber: #e8a33d;
+  --accent-red: #d64545;
 
   /* Cores por etapa do sinistro — usadas na fita de pipeline e nos gráficos */
   --stage-new: #8b93a7;
   --stage-initial-contact: #6b8fd6;
-  --stage-docs-pending: #d69a4a;
+  --stage-docs-pending: #e8a33d;
   --stage-docs-received: #3fa796;
   --stage-analysis: #6f5fd6;
-  --stage-inspection: #c9793f;
-  --stage-adjustment: #0f766e;
+  --stage-inspection: #d67f3f;
+  --stage-adjustment: #1b7a72;
   --stage-insurer: #4a6fb5;
   --stage-payment: #2f9e5c;
   --stage-completed: #2f9e5c;
-  --stage-denied: #c94f4f;
+  --stage-denied: #d64545;
 }
 
 .dark {
-  --bg: #0c0d10;
-  --surface: #16181c;
-  --surface-hover: #1e2024;
-  --ink: #e9e9ea;
-  --muted: #8d8d95;
-  --border: #232529;
-  --primary: #2dd4bf;
-  --primary-hover: #5eead4;
+  --bg: #0e1116;
+  --surface: #171a21;
+  --surface-hover: #1f232c;
+  --ink: #e7e9ee;
+  --muted: #8b93a7;
+  --border: #262b36;
+
+  --primary: #2ba89c;
+  --primary-hover: #3bc3b5;
 }
 
 body {

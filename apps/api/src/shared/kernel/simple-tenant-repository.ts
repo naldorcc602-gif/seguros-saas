@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getCurrentTenantId } from '@seguros/database';
 
 /**
@@ -51,4 +50,3 @@ export class SimpleTenantRepository<T> {
     return result.count > 0;
   }
 }
-

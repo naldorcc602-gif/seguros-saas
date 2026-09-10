@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 import { claimPriorityEnum, claimProductTypeEnum } from './claim.schema';
@@ -196,4 +195,3 @@ export const addCommentSchema = z.object({
   content: z.string().min(1, 'O comentário não pode ficar vazio.'),
 });
 export type AddCommentInput = z.infer<typeof addCommentSchema>;
-

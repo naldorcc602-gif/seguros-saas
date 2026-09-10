@@ -2,7 +2,7 @@
   "name": "seguros-saas",
   "private": true,
   "version": "0.1.0",
-  "description": "Sistema de RegulaÃ§Ã£o e GestÃ£o de Sinistros â€” monorepo",
+  "description": "Sistema de Regulação e Gestão de Sinistros — monorepo",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -14,21 +14,38 @@
     "test": "turbo run test",
     "db:generate": "npm run generate --workspace=@seguros/database",
     "db:seed": "npm run db:seed --workspace=@seguros/database",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "prepare": "husky install || exit 0"
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "dependencies": {
+    "@aws-sdk/nested-clients": "^3.997.45",
+    "@eslint/config-helpers": "^0.3.0",
+    "@eslint/core": "^0.17.0",
+    "@humanfs/core": "^0.19.2",
+    "@humanfs/node": "^0.16.6",
+    "@humanfs/types": "^0.15.0",
+    "@tokenizer/token": "^0.3.0",
+    "dunder-proto": "^1.0.1",
+    "es-abstract-get": "^1.0.0",
+    "eslint-module-utils": "^2.12.1",
+    "language-subtag-registry": "^0.3.20",
+    "math-intrinsics": "^1.1.0",
+    "node-exports-info": "^1.6.0",
+    "node-releases": "^2.0.54",
+    "undici-types": "^6.21.0",
+    "zod": "^3.23.0",
+    "@tanstack/react-query": "^5.102.8"
   },
   "devDependencies": {
-    "husky": "^9.1.0",
-    "prettier": "^3.3.3",
     "turbo": "^2.1.0",
-    "typescript": "^5.6.0"
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.0",
+    "eslint": "^9.15.0",
+    "typescript-eslint": "^8.15.0",
+    "@eslint/eslintrc": "^3.2.0",
+    "eslint-config-next": "^15.0.0"
   },
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "npm@10.8.0",
-  "dependencies": {
-    "lucide-react": "^0.446.0"
-  }
+  "packageManager": "npm@10.8.0"
 }
-

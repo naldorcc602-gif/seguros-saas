@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 export const claimStageEnum = z.enum([
@@ -102,4 +101,3 @@ export const dashboardSummarySchema = z.object({
 });
 
 export type DashboardSummary = z.infer<typeof dashboardSummarySchema>;
-

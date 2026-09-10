@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { prisma } from '@seguros/database';
@@ -59,4 +58,3 @@ export function startEmailWorker(): Worker<EmailJobPayload> {
 
   return worker;
 }
-

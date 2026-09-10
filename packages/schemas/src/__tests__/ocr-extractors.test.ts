@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   extractAllFields,
   extractChassis,
@@ -126,4 +125,3 @@ describe('extractAllFields', () => {
     expect(extractAllFields('lorem ipsum dolor sit amet')).toEqual({});
   });
 });
-

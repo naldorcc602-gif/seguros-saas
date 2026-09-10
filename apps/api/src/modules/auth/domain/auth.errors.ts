@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { UnauthorizedException, ConflictException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 
 export class InvalidCredentialsError extends UnauthorizedException {
@@ -39,4 +38,3 @@ export class TwoFactorNotPendingError extends BadRequestException {
     super('Nenhuma verificação em duas etapas pendente para este token.');
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Module } from '@nestjs/common';
 
 import { RealtimeModule } from '../../shared/realtime/realtime.module';
@@ -16,4 +15,3 @@ import { ClaimsController } from './presentation/claims.controller';
   providers: [ClaimsService, ClaimsRepository],
 })
 export class ClaimsModule {}
-

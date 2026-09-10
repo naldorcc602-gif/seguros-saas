@@ -31,7 +31,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="pt-BR" className={`${spaceGrotesk.variable} ${inter.variable} ${plexMono.variable}`}>
       <head>
         <script
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
             __html: `
               try {

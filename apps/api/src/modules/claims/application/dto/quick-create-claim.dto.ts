@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
@@ -27,4 +26,3 @@ export class QuickCreateClaimDto {
   @Min(0)
   estimatedValue?: number;
 }
-

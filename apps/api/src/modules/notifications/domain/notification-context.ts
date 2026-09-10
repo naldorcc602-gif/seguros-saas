@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Dados mínimos que qualquer módulo (Claims, Documents) precisa fornecer
  * para o NotificationsService disparar notificações in-app + e-mail.
@@ -22,4 +21,3 @@ export interface ClaimNotificationContext {
   estimatedValue?: number | null;
   tenantName?: string;
 }
-

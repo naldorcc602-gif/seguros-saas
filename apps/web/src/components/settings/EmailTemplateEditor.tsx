@@ -82,7 +82,7 @@ export function EmailTemplateEditor({ template }: { template: EmailTemplateItem 
       <div className="rounded-lg border border-border bg-surface p-4">
         <p className="text-xs font-medium text-muted">Preview (com dados de exemplo)</p>
         {!preview ? (
-          <p className="mt-2 text-sm text-muted">Clique em "Atualizar preview" para ver como o e-mail vai ficar.</p>
+          <p className="mt-2 text-sm text-muted">Clique em &quot;Atualizar preview&quot; para ver como o e-mail vai ficar.</p>
         ) : (
           <div className="mt-2">
             <p className="border-b border-border pb-2 text-sm font-medium text-ink">{preview.subject}</p>

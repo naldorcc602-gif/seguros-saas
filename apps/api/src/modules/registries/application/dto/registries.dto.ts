@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { PartialType } from '@nestjs/mapped-types';
 import { IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 
@@ -149,4 +148,3 @@ export class CreateLawyerDto {
   email?: string;
 }
 export class UpdateLawyerDto extends PartialType(CreateLawyerDto) {}
-

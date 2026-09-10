@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { prisma } from '@seguros/database';
 
@@ -25,4 +24,3 @@ export class RefreshTokenRepository {
     return prisma.refreshToken.updateMany({ where: { userId }, data: { revoked: true } });
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ClaimNotFoundError } from '../../domain/claims.errors';
 import { ClaimsService } from '../claims.service';
 
@@ -90,4 +89,3 @@ describe('ClaimsService.quickCreate', () => {
     );
   });
 });
-

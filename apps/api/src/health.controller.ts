@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -21,4 +20,3 @@ export class HealthController {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
 }
-

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AttachLinkInput, ConfirmUploadInput, PresignUploadInput } from '@seguros/schemas';
+import type { ConfirmUploadInput, PresignUploadInput } from '@seguros/schemas';
 
 import { documentsApi } from '@/lib/documents-api';
 import { uploadFileToPresignedUrl } from '@/lib/upload-helper';
@@ -22,7 +22,7 @@ export function useChecklist(claimId: string) {
 
 /**
  * Mutation de upload completo: presign -> PUT direto no S3/R2 -> confirm.
- * `onProgress` Ã© opcional, repassado ao XHR do upload.
+ * `onProgress` é opcional, repassado ao XHR do upload.
  */
 export function useUploadDocument(claimId: string) {
   const queryClient = useQueryClient();
@@ -55,17 +55,6 @@ export function useUploadDocument(claimId: string) {
       };
       return documentsApi.confirm(claimId, confirmInput);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents', claimId] });
-      queryClient.invalidateQueries({ queryKey: ['checklist', claimId] });
-    },
-  });
-}
-
-export function useAttachLink(claimId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (input: AttachLinkInput) => documentsApi.attachLink(claimId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents', claimId] });
       queryClient.invalidateQueries({ queryKey: ['checklist', claimId] });
@@ -111,4 +100,3 @@ export function useUploadLinks(claimId: string) {
 
   return { ...list, generate };
 }
-

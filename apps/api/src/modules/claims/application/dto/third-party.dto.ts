@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class ThirdPartyDto {
@@ -22,4 +21,3 @@ export class ThirdPartyDto {
   @IsString()
   description?: string;
 }
-

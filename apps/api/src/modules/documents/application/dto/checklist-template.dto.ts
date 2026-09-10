@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Type } from 'class-transformer';
 import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
@@ -30,4 +29,3 @@ export class GenerateUploadLinkDto {
   @Min(1)
   expiresInDays?: number;
 }
-

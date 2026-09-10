@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export interface AuthenticatedUser {
@@ -16,4 +15,3 @@ export const CurrentUser = createParamDecorator((_: unknown, ctx: ExecutionConte
   const request = ctx.switchToHttp().getRequest();
   return request.user;
 });
-

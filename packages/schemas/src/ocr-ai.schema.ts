@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 /** Campos que o OCR tenta extrair — nomes fixos, usados tanto no worker quanto na tela de revisão. */
@@ -80,4 +79,3 @@ export const aiResponseSchema = z.object({
   generatedAt: z.string(),
 });
 export type AiResponse = z.infer<typeof aiResponseSchema>;
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class RegisterTenantDto {
@@ -21,4 +20,3 @@ export class RegisterTenantDto {
   @MinLength(8, { message: 'A senha deve ter pelo menos 8 caracteres.' })
   password!: string;
 }
-

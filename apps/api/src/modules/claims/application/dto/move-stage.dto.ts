@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsEnum } from 'class-validator';
 
 const STAGES = [
@@ -19,4 +18,3 @@ export class MoveStageDto {
   @IsEnum(STAGES)
   stage!: (typeof STAGES)[number];
 }
-

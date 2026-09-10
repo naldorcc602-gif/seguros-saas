@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
@@ -37,4 +36,3 @@ export class AnthropicClientService {
     return textBlock?.type === 'text' ? textBlock.text : '';
   }
 }
-

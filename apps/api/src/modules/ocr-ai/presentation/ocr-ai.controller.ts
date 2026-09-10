@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Body, Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -38,4 +37,3 @@ export class OcrAiController {
     return this.ocrAiService.applyOcrField(claimId, dto.targetField, dto.value);
   }
 }
-

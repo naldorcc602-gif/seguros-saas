@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, prisma } from '@seguros/database';
 import { randomBytes } from 'node:crypto';
@@ -6,10 +5,9 @@ import { randomBytes } from 'node:crypto';
 export interface CreateDocumentData {
   claimId: string;
   fileName: string;
-  mimeType?: string;
-  sizeBytes?: number;
-  storageKey?: string;
-  externalUrl?: string;
+  mimeType: string;
+  sizeBytes: number;
+  storageKey: string;
   checklistItemId?: string;
   uploadedByUserId?: string;
   uploadedByClient: boolean;
@@ -39,12 +37,12 @@ export class DocumentsRepository {
   async create(data: CreateDocumentData) {
     const contextTenantId = getCurrentTenantId();
 
-    // Claim Ã‰ filtrado por tenant pela extensÃ£o do Prisma quando hÃ¡ contexto
-    // (upload autenticado) â€” isso jÃ¡ garante que sÃ³ enxergamos o claim se for
-    // do nosso tenant. No fluxo do portal pÃºblico (sem login) NÃƒO hÃ¡
-    // contexto de tenant; nesse caso usamos o tenantId do prÃ³prio claim
-    // encontrado â€” a posse jÃ¡ foi validada antes pelo token do link de
-    // upload (ver DocumentsService/UploadLink), nÃ£o por este mÃ©todo.
+    // Claim É filtrado por tenant pela extensão do Prisma quando há contexto
+    // (upload autenticado) — isso já garante que só enxergamos o claim se for
+    // do nosso tenant. No fluxo do portal público (sem login) NÃO há
+    // contexto de tenant; nesse caso usamos o tenantId do próprio claim
+    // encontrado — a posse já foi validada antes pelo token do link de
+    // upload (ver DocumentsService/UploadLink), não por este método.
     const claim = await prisma.claim.findFirst({ where: { id: data.claimId }, select: { id: true, tenantId: true } });
     if (!claim) return null;
     const tenantId = contextTenantId ?? claim.tenantId;
@@ -65,7 +63,6 @@ export class DocumentsRepository {
         mimeType: data.mimeType,
         sizeBytes: data.sizeBytes,
         storageKey: data.storageKey,
-        externalUrl: data.externalUrl,
         checklistItemId: data.checklistItemId,
         uploadedByUserId: data.uploadedByUserId,
         uploadedByClient: data.uploadedByClient,
@@ -77,12 +74,12 @@ export class DocumentsRepository {
     });
   }
 
-  /** Nova versÃ£o de um documento jÃ¡ existente (ex: cliente reenvia uma CNH legÃ­vel). */
+  /** Nova versão de um documento já existente (ex: cliente reenvia uma CNH legível). */
   async addVersion(documentId: string, storageKey: string, uploadedByUserId: string | undefined) {
-    // findFirst em Document Ã‰ filtrado por tenant pela extensÃ£o do Prisma â€”
+    // findFirst em Document É filtrado por tenant pela extensão do Prisma —
     // confirmamos que o documento pertence ao tenant atual ANTES de criar
-    // qualquer registro, para nÃ£o deixar uma DocumentVersion Ã³rfÃ£ no ar caso
-    // o documentId pertenÃ§a a outro tenant.
+    // qualquer registro, para não deixar uma DocumentVersion órfã no ar caso
+    // o documentId pertença a outro tenant.
     const existing = await prisma.document.findFirst({ where: { id: documentId } });
     if (!existing) return null;
 
@@ -107,7 +104,7 @@ export class DocumentsRepository {
     return prisma.document.findFirst({ where: { id }, include: documentInclude });
   }
 
-  // â”€â”€ Checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Checklist ──────────────────────────────────────────────────────
   listChecklistByClaim(claimId: string) {
     return prisma.claimChecklistItem.findMany({
       where: { claimId },
@@ -119,11 +116,11 @@ export class DocumentsRepository {
   async updateChecklistItemStatus(itemId: string, status: string) {
     const tenantId = getCurrentTenantId();
 
-    // ClaimChecklistItem nÃ£o tem coluna `tenantId` prÃ³pria (herda o isolamento
-    // via Claim.tenantId) â€” por isso NÃƒO estÃ¡ na lista de modelos interceptados
-    // pela extensÃ£o de tenant do Prisma. Sem esta validaÃ§Ã£o explÃ­cita, alguÃ©m
+    // ClaimChecklistItem não tem coluna `tenantId` própria (herda o isolamento
+    // via Claim.tenantId) — por isso NÃO está na lista de modelos interceptados
+    // pela extensão de tenant do Prisma. Sem esta validação explícita, alguém
     // de outro tenant que soubesse/adivinhasse o `itemId` poderia alterar o
-    // status de um checklist que nÃ£o Ã© seu. Confirmamos a posse via join antes
+    // status de um checklist que não é seu. Confirmamos a posse via join antes
     // de escrever.
     const owned = await prisma.claimChecklistItem.findFirst({
       where: { id: itemId, claim: { tenantId } },
@@ -155,7 +152,7 @@ export class DocumentsRepository {
     return result.count > 0;
   }
 
-  // â”€â”€ Links de upload (portal do cliente) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Links de upload (portal do cliente) ─────────────────────────────
   createUploadLink(claimId: string, expiresAt: Date | null) {
     const token = randomBytes(24).toString('hex');
     return prisma.uploadLink.create({ data: { claimId, token, expiresAt } });
@@ -166,10 +163,10 @@ export class DocumentsRepository {
   }
 
   /**
-   * Busca por token NÃƒO passa pelo filtro de tenant (Ã© usada pelo portal
-   * pÃºblico, sem autenticaÃ§Ã£o â€” nÃ£o hÃ¡ contexto de tenant ainda nesse ponto).
-   * O prÃ³prio token, sendo um segredo aleatÃ³rio de 24 bytes, Ã© o mecanismo
-   * de controle de acesso aqui, nÃ£o o isolamento por tenant.
+   * Busca por token NÃO passa pelo filtro de tenant (é usada pelo portal
+   * público, sem autenticação — não há contexto de tenant ainda nesse ponto).
+   * O próprio token, sendo um segredo aleatório de 24 bytes, é o mecanismo
+   * de controle de acesso aqui, não o isolamento por tenant.
    */
   findUploadLinkByToken(token: string) {
     return prisma.uploadLink.findFirst({
@@ -190,11 +187,11 @@ export class DocumentsRepository {
   }
 
   /**
-   * Busca os dados mÃ­nimos para montar um `ClaimNotificationContext`
+   * Busca os dados mínimos para montar um `ClaimNotificationContext`
    * (ver notifications/domain/notification-context.ts). Consulta direta ao
-   * Prisma em vez de reaproveitar ClaimsRepository â€” DocumentsModule nÃ£o
-   * importa ClaimsModule (sÃ³ o gateway compartilhado e o NotificationsModule),
-   * entÃ£o cada mÃ³dulo resolve o prÃ³prio contexto de notificaÃ§Ã£o localmente.
+   * Prisma em vez de reaproveitar ClaimsRepository — DocumentsModule não
+   * importa ClaimsModule (só o gateway compartilhado e o NotificationsModule),
+   * então cada módulo resolve o próprio contexto de notificação localmente.
    */
   async getClaimNotificationContext(claimId: string) {
     return prisma.claim.findFirst({
@@ -209,5 +206,3 @@ export class DocumentsRepository {
     });
   }
 }
-
-

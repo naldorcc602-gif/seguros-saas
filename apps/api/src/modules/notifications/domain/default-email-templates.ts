@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Templates de e-mail padrão — semeados automaticamente para todo tenant
  * novo (ver UsersRepository.createTenantAndAdmin), no mesmo espírito do
@@ -72,4 +71,3 @@ export const DEFAULT_EMAIL_TEMPLATES: Array<{ key: string; subject: string; body
       '<p>Sua resposta nos ajuda a melhorar continuamente.</p>',
   },
 ];
-

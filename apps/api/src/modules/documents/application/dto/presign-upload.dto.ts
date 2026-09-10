@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsIn, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
 
 const ACCEPTED_MIME_TYPES = [
@@ -32,4 +31,3 @@ export class PresignUploadDto {
   @IsString()
   checklistItemId?: string;
 }
-

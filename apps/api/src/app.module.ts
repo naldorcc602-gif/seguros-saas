@@ -1,6 +1,4 @@
-// @ts-nocheck
 import { Module } from '@nestjs/common';
-import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -16,48 +14,48 @@ import { RegistriesModule } from './modules/registries/registries.module';
 import { ReportsModule } from './modules/reports/reports.module';
 
 /**
- * MÃ³dulo raiz.
+ * Módulo raiz.
  *
- * Os mÃ³dulos de domÃ­nio (ClaimsModule, DocumentsModule, AuthModule, etc.)
- * jÃ¡ tÃªm suas pastas reservadas em `src/modules/*` seguindo Clean Architecture
- * (domain / application / infrastructure / presentation) e serÃ£o registrados
+ * Os módulos de domínio (ClaimsModule, DocumentsModule, AuthModule, etc.)
+ * já têm suas pastas reservadas em `src/modules/*` seguindo Clean Architecture
+ * (domain / application / infrastructure / presentation) e serão registrados
  * aqui conforme cada fase do roadmap for implementada:
- *   - AuthModule        -> âœ… Fase 5 (implementado)
- *   - DashboardModule    -> âœ… Fase 6 (implementado)
- *   - ClaimsModule       -> âœ… Fase 7 (Kanban) + Fase 8 (cadastro completo)
- *   - RegistriesModule   -> âœ… Fase 8 (cadastros auxiliares: seguradoras, corretores, clientes, peritos, oficinas, despachantes, advogados)
- *   - DocumentsModule    -> âœ… Fase 9 (upload S3/R2, checklist, portal pÃºblico do cliente)
- *   - NotificationsModule-> âœ… Fase 10 (in-app + e-mail, fila BullMQ, SLA/prazo agendado)
- *   - OcrAiModule        -> âœ… Fase 11 (OCR via worker + IA sÃ­ncrona via Anthropic)
- *   - ReportsModule      -> âœ… Fase 12 (tempo mÃ©dio, SLA, financeiro, produtividade, documentos pendentes + exportaÃ§Ã£o PDF/Excel/CSV)
- *   - FinancialModule    -> (parte do escopo financeiro, absorvida pelo ReportsModule + FinancialEntry jÃ¡ existente)
- *   - AuditModule        -> cross-cutting, ativado a partir do AuthModule (guards jÃ¡ emitem contexto)
+ *   - AuthModule        -> ✅ Fase 5 (implementado)
+ *   - DashboardModule    -> ✅ Fase 6 (implementado)
+ *   - ClaimsModule       -> ✅ Fase 7 (Kanban) + Fase 8 (cadastro completo)
+ *   - RegistriesModule   -> ✅ Fase 8 (cadastros auxiliares: seguradoras, corretores, clientes, peritos, oficinas, despachantes, advogados)
+ *   - DocumentsModule    -> ✅ Fase 9 (upload S3/R2, checklist, portal público do cliente)
+ *   - NotificationsModule-> ✅ Fase 10 (in-app + e-mail, fila BullMQ, SLA/prazo agendado)
+ *   - OcrAiModule        -> ✅ Fase 11 (OCR via worker + IA síncrona via Anthropic)
+ *   - ReportsModule      -> ✅ Fase 12 (tempo médio, SLA, financeiro, produtividade, documentos pendentes + exportação PDF/Excel/CSV)
+ *   - FinancialModule    -> (parte do escopo financeiro, absorvida pelo ReportsModule + FinancialEntry já existente)
+ *   - AuditModule        -> cross-cutting, ativado a partir do AuthModule (guards já emitem contexto)
  *
  * Nota de arquitetura (Fase 10): o gateway WebSocket (antes dentro de
- * ClaimsModule) foi extraÃ­do para `shared/realtime` porque NotificationsModule
+ * ClaimsModule) foi extraído para `shared/realtime` porque NotificationsModule
  * precisava dele e, ao mesmo tempo, precisava ser importado POR ClaimsModule/
- * DocumentsModule (para disparar notificaÃ§Ãµes) â€” ver shared/realtime/realtime.module.ts.
+ * DocumentsModule (para disparar notificações) — ver shared/realtime/realtime.module.ts.
  *
  * Nota de arquitetura (Fase 11/12): assim como Documents/Notifications,
- * OcrAiModule e ReportsModule NÃƒO importam ClaimsModule â€” montam seu prÃ³prio
+ * OcrAiModule e ReportsModule NÃO importam ClaimsModule — montam seu próprio
  * contexto de leitura direto via Prisma.
  *
- * Nota de seguranÃ§a (Fase 16 â€” hardening de produÃ§Ã£o): ThrottlerModule Ã©
- * global (rate limit padrÃ£o para toda a API); os endpoints de login/2FA tÃªm
- * limites mais estritos via @Throttle() no AuthController, jÃ¡ que sÃ£o o
- * alvo mais comum de forÃ§a bruta.
+ * Nota de segurança (Fase 16 — hardening de produção): ThrottlerModule é
+ * global (rate limit padrão para toda a API); os endpoints de login/2FA têm
+ * limites mais estritos via @Throttle() no AuthController, já que são o
+ * alvo mais comum de força bruta.
  */
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, '../../../.env'),
+      envFilePath: ['.env'],
     }),
     ThrottlerModule.forRoot([
       {
         name: 'default',
         ttl: 60_000, // 1 minuto
-        limit: 100, // 100 requisiÃ§Ãµes/minuto por IP â€” generoso o bastante para uso normal do app
+        limit: 100, // 100 requisições/minuto por IP — generoso o bastante para uso normal do app
       },
     ]),
     AuthModule,
@@ -73,5 +71,3 @@ import { ReportsModule } from './modules/reports/reports.module';
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
-
-

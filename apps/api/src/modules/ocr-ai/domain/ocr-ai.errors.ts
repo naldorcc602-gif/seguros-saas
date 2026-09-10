@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export class ClaimNotFoundForAiError extends NotFoundException {
@@ -18,4 +17,3 @@ export class MissingEmailPurposeError extends BadRequestException {
     super('Informe o propósito do e-mail a ser gerado.');
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { SetMetadata } from '@nestjs/common';
 import { UserRole } from '@seguros/database';
 
@@ -10,4 +9,3 @@ export const ROLES_KEY = 'roles';
  * específico com permissão extra liberada individualmente).
  */
 export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);
-

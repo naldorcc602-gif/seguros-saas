@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { OCR_QUEUE_NAME, type OcrJobPayload } from '@seguros/schemas';
@@ -20,4 +19,3 @@ export class OcrQueueService {
     });
   }
 }
-

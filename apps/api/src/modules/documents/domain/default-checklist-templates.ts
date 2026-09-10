@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Checklist padrão por tipo de produto — semeado automaticamente para todo
  * tenant novo (ver UsersRepository.createTenantAndAdmin), para que o
@@ -58,4 +57,3 @@ export const DEFAULT_CHECKLIST_TEMPLATES: Array<{
   { productType: 'RCV', name: 'Boletim de ocorrência', required: true, order: 0 },
   { productType: 'RCV', name: 'CNH e CRLV do veículo envolvido', required: true, order: 1 },
 ];
-

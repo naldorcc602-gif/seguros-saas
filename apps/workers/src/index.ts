@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Entrypoint dos workers assíncronos.
  *
@@ -27,4 +26,3 @@ process.on('SIGTERM', async () => {
   await Promise.all([emailWorker.close(), ocrWorker.close()]);
   process.exit(0);
 });
-

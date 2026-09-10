@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NotFoundException } from '@nestjs/common';
 
 export class EmailTemplateNotFoundError extends NotFoundException {
@@ -6,4 +5,3 @@ export class EmailTemplateNotFoundError extends NotFoundException {
     super('Modelo de e-mail não encontrado.');
   }
 }
-

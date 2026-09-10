@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '@seguros/database';
@@ -26,4 +25,3 @@ export class RolesGuard implements CanActivate {
     return true;
   }
 }
-

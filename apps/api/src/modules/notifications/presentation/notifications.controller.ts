@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@seguros/database';
@@ -65,4 +64,3 @@ export class NotificationsController {
     return this.emailTemplatesService.preview(dto);
   }
 }
-

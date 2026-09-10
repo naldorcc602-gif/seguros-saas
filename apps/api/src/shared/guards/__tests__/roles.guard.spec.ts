@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
@@ -41,4 +40,3 @@ describe('RolesGuard', () => {
     expect(() => guard.canActivate(mockContext(undefined))).toThrow(ForbiddenException);
   });
 });
-

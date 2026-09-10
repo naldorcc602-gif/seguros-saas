@@ -2,13 +2,21 @@
   "name": "@seguros/schemas",
   "private": true,
   "version": "0.1.0",
-  "description": "Schemas Zod compartilhados entre apps/web (validacao de formulario) e apps/api (validacao de DTO), garantindo que nunca divirjam.",
+  "description": "Schemas Zod compartilhados entre apps/web (validação de formulário) e apps/api (validação de DTO), garantindo que nunca divirjam.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
     "zod": "^3.23.0"

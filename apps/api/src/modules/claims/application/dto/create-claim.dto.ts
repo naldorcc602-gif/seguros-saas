@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -93,4 +92,3 @@ export class CreateClaimDto {
   @Type(() => ThirdPartyDto)
   thirdParties?: ThirdPartyDto[];
 }
-

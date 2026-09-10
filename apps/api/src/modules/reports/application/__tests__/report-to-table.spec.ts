@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { reportToTable } from '../report-to-table';
 
 describe('reportToTable', () => {
@@ -20,7 +19,7 @@ describe('reportToTable', () => {
   it('resolution-time: formata "—" quando avgDays é null', () => {
     const data = { overallAvgDays: null, byRegulator: [{ id: 'u1', name: 'João', avgDays: null, claimCount: 0 }], byInsurer: [] };
     const table = reportToTable('resolution-time', data);
-    expect(table.rows[0][2]).toBe('—');
+    expect(table.rows[0]![2]).toBe('—');
   });
 
   it('financial: formata valores em BRL', () => {
@@ -31,7 +30,7 @@ describe('reportToTable', () => {
       byInsurer: [],
     };
     const table = reportToTable('financial', data);
-    expect(table.rows[0][2]).toContain('1.500,50');
+    expect(table.rows[0]![2]).toContain('1.500,50');
   });
 
   it('pending-documents: uma linha por item pendente', () => {
@@ -54,4 +53,3 @@ describe('reportToTable', () => {
     expect(table.rows[0]).toEqual(['Geral', 'Geral', '10', '7', '3', '70.0%']);
   });
 });
-

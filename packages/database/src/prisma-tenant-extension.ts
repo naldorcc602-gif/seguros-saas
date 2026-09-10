@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Prisma } from '@prisma/client';
 
 import { getCurrentTenantId } from './request-context';
@@ -76,13 +75,13 @@ export function tenantScopedExtension() {
             if (MANY_ROW_OPS.has(operation)) {
               const typedArgs = args as { where?: Record<string, unknown> };
               typedArgs.where = { ...(typedArgs.where ?? {}), tenantId: typedArgs.where?.tenantId ?? tenantId };
-              return query(typedArgs);
+              return query(typedArgs as never);
             }
 
             if (BULK_WRITE_OPS.has(operation)) {
               const typedArgs = args as { where?: Record<string, unknown> };
               typedArgs.where = { ...(typedArgs.where ?? {}), tenantId: typedArgs.where?.tenantId ?? tenantId };
-              return query(typedArgs);
+              return query(typedArgs as never);
             }
 
             if (operation === 'create') {
@@ -90,7 +89,7 @@ export function tenantScopedExtension() {
               if (typedArgs.data && typedArgs.data.tenantId === undefined) {
                 typedArgs.data.tenantId = tenantId;
               }
-              return query(typedArgs);
+              return query(typedArgs as never);
             }
 
             return query(args);
@@ -100,4 +99,3 @@ export function tenantScopedExtension() {
     }),
   );
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { SetMetadata } from '@nestjs/common';
 
 export const PERMISSIONS_KEY = 'permissions';
@@ -14,4 +13,3 @@ export const PERMISSIONS_KEY = 'permissions';
  * por uma consulta com cache curto (Redis) sem mudar a assinatura do guard.
  */
 export const RequirePermissions = (...permissions: string[]) => SetMetadata(PERMISSIONS_KEY, permissions);
-

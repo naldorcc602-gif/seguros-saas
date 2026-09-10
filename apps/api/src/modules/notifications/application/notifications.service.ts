@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import type { EmailTemplateKey, NotificationItem, NotificationListResponse, NotificationType } from '@seguros/schemas';
 
@@ -160,4 +159,3 @@ export class NotificationsService {
     });
   }
 }
-

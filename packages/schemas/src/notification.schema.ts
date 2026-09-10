@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 export const notificationTypeEnum = z.enum([
@@ -127,4 +126,3 @@ export const previewEmailResponseSchema = z.object({
   bodyHtml: z.string(),
 });
 export type PreviewEmailResponse = z.infer<typeof previewEmailResponseSchema>;
-

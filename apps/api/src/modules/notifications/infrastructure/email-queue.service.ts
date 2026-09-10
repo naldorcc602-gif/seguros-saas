@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { EMAIL_QUEUE_NAME, type EmailJobPayload } from '@seguros/schemas';
@@ -18,4 +17,3 @@ export class EmailQueueService {
     });
   }
 }
-

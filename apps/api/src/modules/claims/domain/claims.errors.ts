@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export class ClaimNotFoundError extends NotFoundException {
@@ -12,4 +11,3 @@ export class InvalidStageTransitionError extends BadRequestException {
     super(`Não é possível mover o sinistro de "${from}" para "${to}" diretamente.`);
   }
 }
-

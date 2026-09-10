@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsString, MinLength } from 'class-validator';
 
 export class UpdateEmailTemplateDto {
@@ -18,4 +17,3 @@ export class PreviewEmailTemplateDto {
   @IsString()
   bodyHtml!: string;
 }
-

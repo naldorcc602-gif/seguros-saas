@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, getCurrentUserId } from '@seguros/database';
 import { CLAIM_STAGE_LABELS, type ClaimDetail, type ClaimListResponse, type ClaimStage, type CommentItem, type KanbanCard } from '@seguros/schemas';
@@ -88,7 +87,7 @@ export class ClaimsService {
       throw new Error('ClaimsService.create chamado fora de um contexto de requisição autenticado.');
     }
 
-    const claim = await this.claimsRepository.create(dto, tenantId);
+    const claim = await this.claimsRepository.create(dto as never, tenantId);
     const detail = toClaimDetail(claim);
 
     this.realtimeGateway.broadcastToTenant(tenantId, 'claim.created', { card: toKanbanCard(claim as never) });
@@ -172,4 +171,3 @@ export class ClaimsService {
     };
   }
 }
-

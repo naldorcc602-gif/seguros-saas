@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Mock de @seguros/database para testes unitários — evita depender do
 // Prisma Client gerado (que exige `prisma generate` com acesso à internet
 // para baixar os engines, indisponível neste ambiente de testes). Serviços
@@ -18,4 +17,3 @@ export enum UserRole {
   BROKER = 'BROKER',
   CLIENT = 'CLIENT',
 }
-

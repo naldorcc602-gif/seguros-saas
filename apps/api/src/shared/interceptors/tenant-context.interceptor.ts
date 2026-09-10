@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { requestContextStorage } from '@seguros/database';
 import { Observable } from 'rxjs';
@@ -35,4 +34,3 @@ export class TenantContextInterceptor implements NestInterceptor {
     });
   }
 }
-

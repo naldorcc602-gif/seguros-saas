@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { prisma, ClaimStage } from '@seguros/database';
+import { prisma } from '@seguros/database';
+import type { ClaimStage } from '@seguros/schemas';
 
 import { NotificationsService } from '../application/notifications.service';
 
-const TERMINAL_STAGES: ClaimStage[] = ['COMPLETED' as ClaimStage, 'DENIED' as ClaimStage];
+const TERMINAL_STAGES: ClaimStage[] = ['COMPLETED', 'DENIED'];
 
 /**
  * Roda 1x por dia (00:30) verificando sinistros com SLA vencido. Consulta o
@@ -44,8 +44,8 @@ export class SlaCheckScheduler {
           tenantId: claim.tenantId,
           claimId: claim.id,
           claimNumber: claim.internalNumber,
-          clientName: claim.client?.name || 'Cliente',
-          clientEmail: claim.client?.email || '',
+          clientName: claim.client.name,
+          clientEmail: claim.client.email,
           assignedUserId: claim.assignedUserId,
         },
         'sla',
@@ -53,4 +53,3 @@ export class SlaCheckScheduler {
     }
   }
 }
-

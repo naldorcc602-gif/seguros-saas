@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsEmail, IsString } from 'class-validator';
 
 export class LoginDto {
@@ -8,4 +7,3 @@ export class LoginDto {
   @IsString()
   password!: string;
 }
-

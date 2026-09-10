@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { InvalidCredentialsError, InvalidOrExpiredRefreshTokenError, InvalidTwoFactorCodeError } from '../../domain/auth.errors';
 import { AuthService } from '../auth.service';
 
@@ -202,4 +201,3 @@ describe('AuthService.refresh', () => {
     expect(refreshTokenRepository.revoke).toHaveBeenCalledWith('rt1');
   });
 });
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BadRequestException, GoneException, NotFoundException } from '@nestjs/common';
 
 export class DocumentNotFoundError extends NotFoundException {
@@ -30,4 +29,3 @@ export class ClaimNotFoundForUploadError extends BadRequestException {
     super('Sinistro não encontrado para este upload.');
   }
 }
-

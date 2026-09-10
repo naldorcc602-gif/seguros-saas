@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, prisma } from '@seguros/database';
 
@@ -171,4 +170,3 @@ export class DashboardRepository {
     }));
   }
 }
-

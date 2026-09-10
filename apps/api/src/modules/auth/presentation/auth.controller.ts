@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -111,4 +110,3 @@ export class AuthController {
     return this.authService.confirmTwoFactor(user.userId, dto);
   }
 }
-

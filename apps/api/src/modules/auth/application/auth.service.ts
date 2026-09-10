@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 
 import {
@@ -204,4 +203,3 @@ export class AuthService {
     return { requiresTwoFactor: false, accessToken, refreshToken };
   }
 }
-

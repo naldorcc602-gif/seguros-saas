@@ -1,8 +1,15 @@
-// @ts-nocheck
 import { ConflictException } from '@nestjs/common';
 import { prisma } from '@seguros/database';
 
 export type RegistryModelKey = 'insurer' | 'broker' | 'client' | 'adjuster' | 'workshop' | 'dispatcher' | 'lawyer';
+
+type Delegate<T> = {
+  findMany(args?: unknown): Promise<T[]>;
+  create(args: unknown): Promise<T>;
+  updateMany(args: unknown): Promise<{ count: number }>;
+  deleteMany(args: unknown): Promise<{ count: number }>;
+  findFirst(args?: unknown): Promise<T | null>;
+};
 
 /**
  * CRUD genérico para os cadastros auxiliares (Insurer, Broker, Client,
@@ -24,8 +31,8 @@ export type RegistryModelKey = 'insurer' | 'broker' | 'client' | 'adjuster' | 'w
 export class RegistryCrudRepository<T> {
   constructor(private readonly model: RegistryModelKey) {}
 
-  private get delegate(): any {
-    return (prisma as any)[this.model];
+  private get delegate(): Delegate<T> {
+    return (prisma as unknown as Record<string, Delegate<T>>)[this.model]!;
   }
 
   list(): Promise<T[]> {
@@ -46,12 +53,13 @@ export class RegistryCrudRepository<T> {
     try {
       const result = await this.delegate.deleteMany({ where: { id } });
       return result.count > 0;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // P2003/P2014 = violação de chave estrangeira (Postgres via Prisma) —
       // significa que este cadastro está referenciado por algum sinistro
       // (ex: um cliente com sinistros abertos). Em vez de deixar vazar um
       // erro 500 genérico, traduzimos para uma mensagem acionável.
-      if (error?.code === 'P2003' || error?.code === 'P2014') {
+      const code = (error as { code?: string } | null)?.code;
+      if (code === 'P2003' || code === 'P2014') {
         throw new ConflictException(
           'Este registro não pode ser removido porque está vinculado a um ou mais sinistros.',
         );
@@ -60,4 +68,3 @@ export class RegistryCrudRepository<T> {
     }
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 /**
@@ -27,4 +26,3 @@ export async function downloadObjectBuffer(storageKey: string): Promise<Buffer> 
   }
   return Buffer.concat(chunks);
 }
-

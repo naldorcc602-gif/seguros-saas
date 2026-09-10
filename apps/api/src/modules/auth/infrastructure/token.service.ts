@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -72,7 +71,7 @@ export class TokenService {
 
   private addDuration(base: Date, duration: string): Date {
     const match = /^(\d+)([smhd])$/.exec(duration);
-    if (!match || !match[2]) {
+    if (!match) {
       throw new Error(`Formato de duração inválido: ${duration}`);
     }
     const value = Number(match[1]);
@@ -86,4 +85,3 @@ export class TokenService {
     return new Date(base.getTime() + value * msPerUnit[unit]);
   }
 }
-

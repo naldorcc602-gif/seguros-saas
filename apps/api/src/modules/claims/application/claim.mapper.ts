@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { ClaimDetail, KanbanCard } from '@seguros/schemas';
 
 type ClaimWithRelations = {

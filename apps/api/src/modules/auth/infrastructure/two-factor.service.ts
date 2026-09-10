@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
@@ -19,4 +18,3 @@ export class TwoFactorService {
     return authenticator.verify({ token: code, secret });
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsInt, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class ConfirmUploadDto {
@@ -23,4 +22,3 @@ export class ConfirmUploadDto {
   @IsString()
   geoLocation?: string;
 }
-

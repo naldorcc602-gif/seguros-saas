@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Module } from '@nestjs/common';
 
 import { OcrAiService } from './application/ocr-ai.service';
@@ -11,4 +10,3 @@ import { OcrAiController } from './presentation/ocr-ai.controller';
   providers: [OcrAiService, AiContextRepository, AnthropicClientService],
 })
 export class OcrAiModule {}
-

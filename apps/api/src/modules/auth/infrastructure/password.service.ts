@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -14,4 +13,3 @@ export class PasswordService {
     return bcrypt.compare(plainPassword, hash);
   }
 }
-

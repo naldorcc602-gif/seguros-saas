@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
@@ -69,4 +68,3 @@ export class ExportService {
     });
   }
 }
-

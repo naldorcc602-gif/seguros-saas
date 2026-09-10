@@ -4,8 +4,16 @@
   "version": "0.1.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
   "scripts": {
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "lint": "eslint \"src/**/*.ts\"",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",

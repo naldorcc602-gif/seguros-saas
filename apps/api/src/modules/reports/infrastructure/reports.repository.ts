@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { getCurrentTenantId, prisma } from '@seguros/database';
+import type { ClaimStage } from '@seguros/schemas';
 
-const TERMINAL_STAGES = ['COMPLETED', 'DENIED'];
+const TERMINAL_STAGES: ClaimStage[] = ['COMPLETED', 'DENIED'];
 
 /**
  * Assim como o DashboardRepository (Fase 6), `$queryRaw` NÃO passa pela
@@ -108,7 +108,7 @@ export class ReportsRepository {
   }
 
   async slaOverall() {
-    return (await this.slaCounts('none'))[0];
+    return (await this.slaCounts('none'))[0]!;
   }
 
   async slaByInsurer() {
@@ -207,4 +207,3 @@ export class ReportsRepository {
     }));
   }
 }
-

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 const AI_ACTIONS = [
@@ -24,4 +23,3 @@ export class AiRequestDto {
   @IsString()
   emailPurpose?: string;
 }
-

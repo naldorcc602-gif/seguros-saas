@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 
 import { OcrAiService } from './application/ocr-ai.service';
 import { AiContextRepository } from './infrastructure/ai-context.repository';
-import { AnthropicClientService } from './infrastructure/anthropic-client.service';
+import { AiClientService } from './infrastructure/ai-client.service';
 import { OcrAiController } from './presentation/ocr-ai.controller';
 
 @Module({
   controllers: [OcrAiController],
-  providers: [OcrAiService, AiContextRepository, AnthropicClientService],
+  providers: [OcrAiService, AiContextRepository, AiClientService],
 })
 export class OcrAiModule {}

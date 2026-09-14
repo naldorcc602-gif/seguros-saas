@@ -21,7 +21,7 @@ export class OcrAiController {
   })
   @ApiResponse({ status: 200, description: 'Texto gerado pela IA.' })
   @ApiResponse({ status: 400, description: 'Ação inválida, ou faltou `question`/`emailPurpose` quando exigido.' })
-  @ApiResponse({ status: 500, description: 'ANTHROPIC_API_KEY não configurada neste ambiente.' })
+  @ApiResponse({ status: 500, description: 'IA não configurada neste ambiente (sem ANTHROPIC_API_KEY nem OPENAI_API_KEY) ou falha na chamada ao provedor.' })
   run(@Param('claimId') claimId: string, @Body() dto: AiRequestDto) {
     return this.ocrAiService.run(claimId, dto);
   }

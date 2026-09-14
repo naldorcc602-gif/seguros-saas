@@ -32,6 +32,53 @@ services:
     networks:
       - seguros-net
 
+  # MinIO — armazenamento S3-compatível para desenvolvimento (bucket em endereço local,
+  # sem custo nem credenciais AWS). Produção troca por S3/R2 real: basta apontar
+  # STORAGE_ENDPOINT para o serviço e preencher STORAGE_ACCESS_KEY_ID/SECRET no .env.
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      # CORS permitido no upload direto do navegador (PUT cross-origin).
+      # O MinIO não implementa PutBucketCors da S3 API; o controle é por aqui.
+      MINIO_API_CORS_ALLOW_ORIGIN: "*"
+    ports:
+      - "9000:9000" # API S3 (usada pelo backend via STORAGE_ENDPOINT)
+      - "9001:9001" # Console web do MinIO (login minioadmin/minioadmin)
+    volumes:
+      - minio_data:/data
+    networks:
+      - seguros-net
+
+  # Cria o bucket garantindo que ele exista (aplica CORS é controlado no servidor
+  # via MINIO_API_CORS_ALLOW_ORIGIN, default "*"). Roda e encerra (restart: "no").
+  # Usa a CLI oficial da AWS (amazon/aws-cli), que fala com qualquer API
+  # S3-compatível — inclusive o MinIO — via --endpoint-url.
+  minio-init:
+    image: amazon/aws-cli:latest
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      AWS_EC2_METADATA_DISABLED: "true"
+      MINIO_BUCKET: ${STORAGE_BUCKET:-seguros-saas-dev}
+    entrypoint: >
+      /bin/sh -c "
+      until aws --endpoint-url http://minio:9000 s3 ls >/dev/null 2>&1; do
+        echo 'aguardando MinIO...'; sleep 2;
+      done;
+      aws --endpoint-url http://minio:9000 --region us-east-1 s3 mb s3://"$${MINIO_BUCKET}" 2>/dev/null || echo 'bucket ja existe';
+      echo 'MinIO pronto: bucket '$${MINIO_BUCKET}' criado.'
+      "
+    networks:
+      - seguros-net
+
   api:
     build:
       context: .
@@ -41,6 +88,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-seguros_saas}?schema=public
       REDIS_URL: redis://redis:6379
+      STORAGE_ENDPOINT: http://minio:9000
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,6 +119,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-seguros_saas}?schema=public
       REDIS_URL: redis://redis:6379
+      STORAGE_ENDPOINT: http://minio:9000
     depends_on:
       postgres:
         condition: service_healthy
@@ -113,3 +162,4 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  minio_data:

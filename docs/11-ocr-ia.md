@@ -9,7 +9,7 @@
 - O resultado fica salvo em `Document.ocrExtractedData` (campo que já existia desde a Fase 2). A tela de Documentos mostra os valores encontrados com um botão **"aplicar"** por campo — a aplicação ao cadastro é sempre uma ação deliberada do regulador, nunca automática, porque OCR erra (principalmente com fotos de celular tiradas com má iluminação).
 
 **IA** (síncrono, direto na API — ao contrário do OCR, o regulador espera a resposta na tela na hora):
-- Integração com a API da Anthropic (`@anthropic-ai/sdk`), com o modelo configurável via `ANTHROPIC_MODEL`.
+- Integração com IA desacoplada do provedor (`AiClientService`): por padrão usa a **Anthropic** (`@anthropic-ai/sdk`, modelo via `ANTHROPIC_MODEL`), mas aceita **qualquer API compatível com OpenAI** (`OPENAI_BASE_URL` + `OPENAI_API_KEY` + `OPENAI_MODEL`) — dá para apontar para OpenAI, DeepSeek, Ollama/LM Studio local sem mudar código. Sem chave de nenhum provedor (`AI_PROVIDER`) o endpoint apenas responde com erro claro, sem derrubar o backend.
 - 8 ações do escopo original, todas reaproveitando o mesmo bloco de contexto do sinistro (dados cadastrais, checklist, comentários, timeline) — só muda a instrução dada ao modelo: resumo do sinistro, documentos faltantes, inconsistências, próximos passos, gerar e-mail, parecer técnico, responder pergunta, histórico resumido.
 - Endpoint único `POST /claims/:id/ai` com um campo `action`, em vez de 8 endpoints separados — mais simples de manter e documentar no Swagger.
 - Painel de IA na tela do sinistro (aba "IA"): botões para as ações diretas, e dois campos de entrada livre (pergunta ao assistente, propósito do e-mail a gerar).

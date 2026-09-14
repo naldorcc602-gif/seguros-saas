@@ -8,7 +8,7 @@ interface FileDropZoneProps {
   disabled?: boolean;
 }
 
-const ACCEPTED = '.pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.zip,.rar,.mp4,.mov';
+const ACCEPTED = '.pdf,.png,.jpg,.jpeg,.webp,.tiff,.tif,.heic,.bmp,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip,.rar,.mp4,.mov';
 
 export function FileDropZone({ onFilesSelected, disabled }: FileDropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -33,7 +33,7 @@ export function FileDropZone({ onFilesSelected, disabled }: FileDropZoneProps) {
     >
       <UploadCloud size={28} className="text-muted" />
       <p className="text-sm text-ink">Arraste arquivos aqui ou clique para selecionar</p>
-      <p className="text-xs text-muted">PDF, imagens, DOCX/XLSX, ZIP/RAR, MP4/MOV — até 200MB</p>
+      <p className="text-xs text-muted">PDF, imagens (incl. TIFF/HEIC), DOC/DOCX, XLS/XLSX, CSV, TXT, ZIP/RAR, MP4/MOV — até 200MB</p>
       <input
         ref={inputRef}
         type="file"

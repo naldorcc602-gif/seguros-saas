@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "node -e \"try{require('fs').rmSync('apps/api/node_modules/typescript',{recursive:true,force:true})}catch(e){}\"",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -38,7 +39,7 @@
   "devDependencies": {
     "turbo": "^2.1.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.6.0",
+    "typescript": "5.9.3",
     "eslint": "^9.15.0",
     "typescript-eslint": "^8.15.0",
     "@eslint/eslintrc": "^3.2.0",
@@ -46,6 +47,12 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "overrides": {
+    "typescript": "5.9.3",
+    "@nestjs/cli": {
+      "typescript": "5.9.3"
+    }
   },
   "packageManager": "npm@10.8.0"
 }

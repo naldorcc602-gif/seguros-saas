@@ -4,7 +4,7 @@ import type { AiResponse } from '@seguros/schemas';
 
 import { ClaimNotFoundForAiError, MissingEmailPurposeError, MissingQuestionError } from '../domain/ocr-ai.errors';
 import { AiContextRepository } from '../infrastructure/ai-context.repository';
-import { AnthropicClientService } from '../infrastructure/anthropic-client.service';
+import { AiClientService } from '../infrastructure/ai-client.service';
 import { AiRequestDto } from './dto';
 import {
   buildAskPrompt,
@@ -21,7 +21,7 @@ import {
 export class OcrAiService {
   constructor(
     private readonly contextRepository: AiContextRepository,
-    private readonly anthropicClient: AnthropicClientService,
+    private readonly aiClient: AiClientService,
   ) {}
 
   async run(claimId: string, dto: AiRequestDto): Promise<AiResponse> {
@@ -29,7 +29,7 @@ export class OcrAiService {
     if (!claim) throw new ClaimNotFoundForAiError();
 
     const { system, user } = this.buildPrompt(claim, dto);
-    const content = await this.anthropicClient.complete(system, user);
+    const content = await this.aiClient.complete(system, user);
 
     return { action: dto.action, content, generatedAt: new Date().toISOString() };
   }

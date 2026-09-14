@@ -66,7 +66,7 @@ cp .env.producao.example .env        # e preencher os segredos
 ### Env essencial (prod)
 
 `DATABASE_URL`, `REDIS_URL`, `JWT_ACCESS_SECRET`/`JWT_REFRESH_SECRET`/`JWT_2FA_TEMP_SECRET`,
-`ANTHROPIC_API_KEY`, `STORAGE_*`, `SMTP_*`, `APP_BASE_URL=https://seudominio.com`,
+`ANTHROPIC_API_KEY` ou `OPENAI_API_KEY` (conforme `AI_PROVIDER`), `STORAGE_*`, `SMTP_*`, `APP_BASE_URL=https://seudominio.com`,
 `NEXT_PUBLIC_API_URL=https://seudominio.com/api`, `NODE_ENV=production`, `PORT=3001`.
 
 ### Verificação
@@ -130,7 +130,7 @@ browser — a Vercel **não** recebe `DATABASE_URL`/`REDIS_URL`/segredos.
 1. [ ] Repo `seguros-saas` no GitHub/`main` pushed
 2. [ ] Postgres + Redis acessíveis (URLs TLS se aplicável)
 3. [ ] `prisma migrate deploy` aplicado (não só `db push`)
-4. [ ] Segredos JWT/SMTP/STORAGE/ANTHROPIC **novos e únicos**
+4. [ ] Segredos JWT/SMTP/STORAGE/IA (ANTHROPIC ou OPENAI) **novos e únicos**
 5. [ ] API recebe requests do web (CORS `APP_BASE_URL` correto)
 6. [ ] Workers + filas funcionando (e-mail/OCR)
 7. [ ] `curl <base>/health` → 200 e smoke test passando

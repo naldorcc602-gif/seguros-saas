@@ -32,3 +32,5 @@ coverage/
 # OS
 .DS_Store
 Thumbs.db
+
+*.tsbuildinfo

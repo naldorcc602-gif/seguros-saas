@@ -1,6 +1,8 @@
 import type {
   ChecklistItem,
+  ChecklistTemplateItem,
   ConfirmUploadInput,
+  CreateChecklistTemplateItemInput,
   DocumentItem,
   PresignUploadInput,
   PresignUploadResponse,
@@ -43,6 +45,28 @@ export const documentsApi = {
     apiFetch<DocumentItem>(`/documents/${documentId}/versions/confirm`, {
       method: 'POST',
       body: JSON.stringify({ storageKey }),
+    }),
+
+  // ── Templates de checklist (configuração da análise) ──────────────────
+  // Define quais documentos são solicitados ao segurado por tipo de produto.
+  // O template é copiado para o sinistro na criação e consumido pelo portal
+  // público e pela IA (fase "missing_documents"). A gestão fica em
+  // /configuracoes (aba "Itens de checklist") — ver ChecklistTemplateManager.
+
+  listChecklistTemplates: (productType?: string) => {
+    const query = productType ? `?productType=${productType}` : '';
+    return apiFetch<ChecklistTemplateItem[]>(`/checklist-templates${query}`);
+  },
+
+  createChecklistTemplate: (input: CreateChecklistTemplateItemInput) =>
+    apiFetch<ChecklistTemplateItem>(`/checklist-templates`, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  removeChecklistTemplate: (id: string) =>
+    apiFetch<void>(`/checklist-templates/${id}`, {
+      method: 'DELETE',
     }),
 
   listChecklist: (claimId: string) => apiFetch<ChecklistItem[]>(`/claims/${claimId}/checklist`),

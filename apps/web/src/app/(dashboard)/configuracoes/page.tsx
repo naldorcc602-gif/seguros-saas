@@ -3,11 +3,15 @@
 import { EMAIL_TEMPLATE_LABELS, type EmailTemplateKey } from '@seguros/schemas';
 import { useState } from 'react';
 
+import { ChecklistTemplateManager } from '@/components/settings/ChecklistTemplateManager';
 import { EmailTemplateEditor } from '@/components/settings/EmailTemplateEditor';
 import { useEmailTemplates } from '@/hooks/useEmailTemplates';
 
+type Section = 'email' | 'checklist';
+
 export default function ConfiguracoesPage() {
   const { data: templates, isLoading } = useEmailTemplates();
+  const [section, setSection] = useState<Section>('email');
   const [activeKey, setActiveKey] = useState<EmailTemplateKey | null>(null);
 
   const selected = templates?.find((t) => t.key === (activeKey ?? templates[0]?.key));
@@ -16,11 +20,34 @@ export default function ConfiguracoesPage() {
     <div className="space-y-4">
       <div>
         <h1 className="font-display text-xl font-semibold text-ink">Configurações</h1>
-        <p className="text-sm text-muted">Modelos de e-mail enviados automaticamente ao segurado.</p>
+        <p className="text-sm text-muted">
+          Personalize os modelos de e-mail e os documentos exigidos por produto na análise de sinistros.
+        </p>
       </div>
 
-      {isLoading ? (
-        <div className="h-64 animate-pulse rounded-lg bg-surface" />
+      <div className="border-b border-border text-sm font-medium">
+        <button
+          onClick={() => setSection('email')}
+          className={`rounded-t-md border-b-2 px-4 py-2 transition-colors ${
+            section === 'email' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-ink'
+          }`}
+        >
+          Modelos de e-mail
+        </button>
+        <button
+          onClick={() => setSection('checklist')}
+          className={`rounded-t-md border-b-2 px-4 py-2 transition-colors ${
+            section === 'checklist' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-ink'
+          }`}
+        >
+          Documentos para análise
+        </button>
+      </div>
+
+      {section === 'checklist' ? (
+        <ChecklistTemplateManager />
+      ) : isLoading ? (
+        <div className="h-40 animate-pulse rounded-lg bg-surface" />
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[220px_1fr]">
           <nav className="space-y-1">

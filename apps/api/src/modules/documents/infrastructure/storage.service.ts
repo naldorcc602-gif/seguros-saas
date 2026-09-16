@@ -4,7 +4,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } fro
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'node:crypto';
 
-const PRESIGNED_URL_EXPIRY_SECONDS = 15 * 60; // 15 minutos — tempo suficiente para um upload/download começar
+const PRESIGNED_URL_EXPIRY_SECONDS = 60 * 60; // 1 hora — período realista entre gerar a URL e o usuário clicar (antes era 15 min e "expirava" no meio do trajeto)
 
 /**
  * Abstração de armazenamento de arquivos. Funciona tanto com Amazon S3
